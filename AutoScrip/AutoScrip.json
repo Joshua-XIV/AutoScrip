@@ -5,7 +5,7 @@
   "Description": "A dalamud plugin for exchanging scrips",
   "InternalName": "AutoScrip",
   "ApplicableVersion": "any",
-  "AssemblyVersion": "0.0.0.0",
+  "AssemblyVersion": "0.0.0.1",
   "DalamudApiLevel": 12,
   "Tags": [
     "Scrips"

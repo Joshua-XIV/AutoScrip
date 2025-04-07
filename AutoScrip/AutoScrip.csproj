@@ -3,7 +3,7 @@
 	<PropertyGroup>
 		<PackageProjectUrl>https://github.com/Joshua-XIV</PackageProjectUrl>
 		<Description>Personal Project for Treasure Maps</Description>
-		<Version>0.0.0.0</Version>		
+		<Version>0.0.0.1</Version>		
 		<TargetFramework>net9.0-windows</TargetFramework>        
 		<ImplicitUsings>enable</ImplicitUsings>
 		<LangVersion>preview</LangVersion>	
