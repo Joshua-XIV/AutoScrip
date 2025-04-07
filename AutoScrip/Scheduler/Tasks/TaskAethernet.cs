@@ -19,7 +19,10 @@ internal unsafe class TaskAethernet
         if (aethernetName != string.Empty && gameObjectId != aethernetId)
         {
             Generic.PluginDebugInfoEnqueue("Using Aethernet");
-            TaskMoveTo.Enqueue(gameObject.Position, gameObject.Name.ToString(), 7f);
+            if (zoneId == 1186)
+                TaskMoveTo.Enqueue(gameObject.Position, gameObject.Name.ToString(), 10f, false, true);
+            else
+                TaskMoveTo.Enqueue(gameObject.Position, gameObject.Name.ToString(), 7f);
             Plugin.taskManager.Enqueue(() => Aethernet(aethernetName, aethernetIndex));
             Plugin.taskManager.Enqueue(() => !Svc.Condition[ConditionFlag.BetweenAreas] && ZonesHelper.IsInZone(zoneId));
         }
