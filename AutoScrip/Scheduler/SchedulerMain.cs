@@ -214,6 +214,15 @@ internal static class SchedulerMain
                             TaskQuitFish.Enqueue();
                             Plugin.taskManager.Enqueue(() => CurrentState = State.Idle);
                         }
+                        else if (InventoryHelper.GetFreeInventorySlots() == 0)
+                        {
+                            fishingSession = false;
+                            fishingStartTime = null;
+                            runAutoHook = false;
+                            Generic.PluginLogInfoInstant($"Duration Ended, Inventory Full");
+                            TaskQuitFish.Enqueue();
+                            Plugin.taskManager.Enqueue(() => CurrentState = State.Idle);
+                        }
                         Generic.SelectYes();
                         break;
 
@@ -263,51 +272,51 @@ internal static class SchedulerMain
 
 
                     case State.SwapJobs:
-                                if (Svc.ClientState.LocalPlayer.GetJob() == ECommons.ExcelServices.Job.FSH)
-                                {
-                                    CurrentState = State.Idle;
-                                }
-                                if (swapCounter >= 3 && Svc.ClientState.LocalPlayer.GetJob() != ECommons.ExcelServices.Job.FSH)
-                                {
-                                    DuoLog.Error("Failed to swap to Fisher");
-                                    DisablePlugin();
-                                }
-                                else
-                                {
-                                    Plugin.taskManager.Enqueue(() => Chat.Instance.ExecuteCommand($"/gearset change \"{C.FishSetName}\""));
-                                    Plugin.taskManager.DelayNext(500);
-                                    Plugin.taskManager.Enqueue(() => swapCounter++);
-                                }
-                                break;
+                    if (Svc.ClientState.LocalPlayer.GetJob() == ECommons.ExcelServices.Job.FSH)
+                    {
+                        CurrentState = State.Idle;
+                    }
+                    if (swapCounter >= 3 && Svc.ClientState.LocalPlayer.GetJob() != ECommons.ExcelServices.Job.FSH)
+                    {
+                        DuoLog.Error("Failed to swap to Fisher");
+                        DisablePlugin();
+                    }
+                    else
+                    {
+                        Plugin.taskManager.Enqueue(() => Chat.Instance.ExecuteCommand($"/gearset change \"{C.FishSetName}\""));
+                        Plugin.taskManager.DelayNext(500);
+                        Plugin.taskManager.Enqueue(() => swapCounter++);
+                    }
+                    break;
 
-                            case State.WaitingForVnav:
-                                if (Plugin.navmeshIPC.IsReady())
-                                    CurrentState = State.Idle;
-                                else
-                                    Plugin.taskManager.DelayNext(500);
-                                break;
+                    case State.WaitingForVnav:
+                        if (Plugin.navmeshIPC.IsReady())
+                            CurrentState = State.Idle;
+                        else
+                            Plugin.taskManager.DelayNext(500);
+                        break;
 
-                            case State.Error:
-                                if (!InventoryHelper.HasInvetorySpace())
-                                {
-                                    DuoLog.Error("Insufficient Inventory Space");
-                                    DisablePlugin();
-                                }
-                                if (!(InventoryHelper.GetGil() / 300 == 0) && !InventoryHelper.HasFishingBait() && !C.BuyBait)
-                                {
-                                    DuoLog.Error("Insufficient Fishing Bait");
-                                    if (!C.BuyBait)
-                                        DuoLog.Error("Enable Buy Bait in Config or stock your inventory with \"Versatile Lures\"");
-                                    else
-                                        DuoLog.Error("Not Enough Gil to Buy Bait");
-                                    DisablePlugin();
-                                }
-                                break;
+                    case State.Error:
+                        if (!InventoryHelper.HasInvetorySpace())
+                        {
+                            DuoLog.Error("Insufficient Inventory Space");
+                            DisablePlugin();
+                        }
+                        if (!(InventoryHelper.GetGil() / 300 == 0) && !InventoryHelper.HasFishingBait() && !C.BuyBait)
+                        {
+                            DuoLog.Error("Insufficient Fishing Bait");
+                            if (!C.BuyBait)
+                                DuoLog.Error("Enable Buy Bait in Config or stock your inventory with \"Versatile Lures\"");
+                            else
+                                DuoLog.Error("Not Enough Gil to Buy Bait");
+                            DisablePlugin();
+                        }
+                        break;
 
-                            default:
-                                CurrentState = State.Idle;
-                                break;
-                            }
+                    default:
+                        CurrentState = State.Idle;
+                        break;
+                    }
             }
         }
     }
