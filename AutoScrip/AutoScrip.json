@@ -1,0 +1,15 @@
+{
+  "Author": "Josh",
+  "Name": "AutoScrip",
+  "Punchline": "Scrip Exchange",
+  "Description": "A dalamud plugin for exchanging scrips",
+  "InternalName": "AutoScrip",
+  "ApplicableVersion": "any",
+  "AssemblyVersion": "0.0.0.0",
+  "DalamudApiLevel": 12,
+  "Tags": [
+    "Scrips"
+  ],
+  "IconUrl": "https://raw.githubusercontent.com/Joshua-XIV/TreasureMaps/main/TreasureMaps/Assets/money.png",
+  "RepoUrl": "https://github.com/Joshua-XIV/AutoScrip"
+}

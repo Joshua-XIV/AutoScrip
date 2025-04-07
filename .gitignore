@@ -1,0 +1,21 @@
+﻿# Ignore Visual Studio and build-related files
+.vs/
+DesignTimeBuild/
+v17/
+
+# Ignore build output
+bin/
+obj/
+
+# Ignore user-specific files
+*.user
+*.suo
+*.cache
+*.pdb
+
+# Ignore generated files
+*.dll
+*.exe
+*.log
+*.tmp
+*.bak
