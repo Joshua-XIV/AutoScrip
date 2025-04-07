@@ -14,7 +14,7 @@ internal class Disclaimer
         ImGui.TextWrapped("To avoid unnecessary consequences please follow these rules when using AutoScrip\n");
         ImGui.PopStyleColor();
         ImGui.TextWrapped("1. Do not acknowledge your use of AutoScrip in game chat");
-        ImGui.TextWrapped("2. Do not leave Treasure Maps unattended for a prolonged period of time");
+        ImGui.TextWrapped("2. Do not leave AutoScrip unattended for a prolonged period of time");
         ImGui.TextWrapped("3. Never reply back to players that are trying to do so-called bot checks by trading or chatting with you; instead, blacklist these players immediately");
         ImGui.TextWrapped("4. If questioned by a game master, always claim that you are doing all actions manually and never admit plugin usage.");
         ImGui.PushStyleColor(ImGuiCol.Text, ImGuiColors.DalamudRed);
