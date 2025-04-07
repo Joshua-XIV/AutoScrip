@@ -1,11 +1,16 @@
 ﻿using AutoScrip.UI.DisclaimerWindow;
 using Dalamud.Interface.Windowing;
 using ECommons.ImGuiMethods;
+using System.Numerics;
+using ImGuiNET;
+using Dalamud.Interface.Textures.TextureWraps;
 
 namespace AutoScrip.UI.MainWindow;
 
 class MainWindow : Window
 {
+    private static IDalamudTextureWrap? orangeScripImage = Plugin.TextureProvider.GetFromFile(Plugin.orangeImagePath).GetWrapOrDefault();
+    private static IDalamudTextureWrap? purpleScripImage = Plugin.TextureProvider.GetFromFile(Plugin.orangeImagePath).GetWrapOrDefault();
     public MainWindow() : base($"AutoScrip ###AutoScripMainWindow")
     {
         SizeConstraints = new()
@@ -13,7 +18,6 @@ class MainWindow : Window
             MinimumSize = new(400, 300),
             MaximumSize = new(9999, 9999)
         };
-
         Plugin.windowSystem.AddWindow(this);
     }
 

@@ -4,6 +4,10 @@ using AutoScrip.IPC;
 using AutoScrip.Scheduler;
 using System.Numerics;
 using ImGuiNET;
+using Dalamud.Interface.Utility.Raii;
+using Dalamud.IoC;
+using Dalamud.Plugin.Services;
+using Dalamud.Interface.Textures.TextureWraps;
 
 namespace AutoScrip.UI.MainWindow;
 
@@ -24,6 +28,8 @@ internal class MainTab
 
     public static void Draw()
     {
+        var tex = C.SelectedScripColor == ScripColor.Orange ? Plugin.orangeImagePath : Plugin.purpleImagePath;
+        var text2 = Plugin.TextureProvider.GetFromFile(tex).GetWrapOrDefault();
         ImGui.SetNextItemWidth(300);
         if (ImGui.Combo("Select Scrip Color", ref selectedColorIndex, scripColorList, scripColorList.Length))
         {
@@ -31,6 +37,12 @@ internal class MainTab
             C.SelectedFish = FishTable.Table.FirstOrDefault(fish => fish.ScripColor == (ScripColor)selectedColorIndex)!;
             UpdateItemSelection();
             C.Save();
+        }
+
+        if (text2 != null)
+        {
+            ImGui.SameLine();
+            ImGui.Image(text2.ImGuiHandle, new Vector2(20f, 20f));
         }
 
         ImGui.SetNextItemWidth(300);

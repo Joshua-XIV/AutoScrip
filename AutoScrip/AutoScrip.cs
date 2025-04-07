@@ -13,6 +13,7 @@ using AutoScrip.IPC;
 using ECommons.Automation;
 using AutoRetainerAPI;
 using System.Diagnostics;
+using Dalamud.Interface.Textures.TextureWraps;
 
 namespace AutoScrip;
 
@@ -23,12 +24,16 @@ public class AutoScrip : IDalamudPlugin
     private Config config;
     public static Config C => Plugin.config;
 
+    [PluginService] 
+    internal static IDalamudPluginInterface PluginInterface { get; private set; } = null!;
     [PluginService]
     internal IDataManager DataManager { get; init; } = null!;
 
     [PluginService]
     internal IGameGui GameGui { get; init; } = null!;
 
+    [PluginService] 
+    internal ITextureProvider TextureProvider { get; private set; } = null!;
     [PluginService]
     internal IGameInteropProvider GameInteropProvider { get; init; } = null!;
 
@@ -39,11 +44,13 @@ public class AutoScrip : IDalamudPlugin
     internal AutoHookIPC autoHookIPC;
     internal AutoRetainerApi autoRetainerApi;
     internal Stopwatch stopwatch;
-    public AutoScrip(IDalamudPluginInterface pluginInterface)
 
+    internal string orangeImagePath;
+    internal string purpleImagePath;
+    public AutoScrip()
     {
         Plugin = this;
-        ECommonsMain.Init(pluginInterface, Plugin, Module.DalamudReflector, Module.ObjectFunctions);
+        ECommonsMain.Init(PluginInterface, Plugin, Module.DalamudReflector, Module.ObjectFunctions);
         new ECommons.Schedulers.TickScheduler(Load);
     }
 
@@ -59,6 +66,9 @@ public class AutoScrip : IDalamudPlugin
         autoHookIPC = new();
         autoRetainerApi = new();
         stopwatch = new();
+
+        orangeImagePath = Path.Combine(PluginInterface.AssemblyLocation.Directory?.FullName!, "Assets", "OrangeScrip.png");
+        purpleImagePath = Path.Combine(PluginInterface.AssemblyLocation.Directory?.FullName!, "Assets", "PurpleScrip.png");
 
         MainTab.Load();
 

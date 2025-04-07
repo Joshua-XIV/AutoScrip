@@ -1,11 +1,11 @@
 {
   "Author": "Josh",
   "Name": "AutoScrip",
-  "Punchline": "Scrip Exchange",
-  "Description": "A dalamud plugin for exchanging scrips",
+  "Punchline": "Need Gathering Scrips?",
+  "Description": "Automation for Orange and Purple Gathering scrips with the help of vnavmesh and AutoHook",
   "InternalName": "AutoScrip",
   "ApplicableVersion": "any",
-  "AssemblyVersion": "0.0.0.1",
+  "AssemblyVersion": "0.0.0.2",
   "DalamudApiLevel": 12,
   "Tags": [
     "Scrips"
