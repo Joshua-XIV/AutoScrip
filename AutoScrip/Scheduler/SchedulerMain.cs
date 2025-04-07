@@ -214,7 +214,7 @@ internal static class SchedulerMain
                             TaskQuitFish.Enqueue();
                             Plugin.taskManager.Enqueue(() => CurrentState = State.Idle);
                         }
-                        else if (InventoryHelper.GetFreeInventorySlots() == 0)
+                        if (InventoryHelper.GetFreeInventorySlots() == 0)
                         {
                             fishingSession = false;
                             fishingStartTime = null;
