@@ -23,8 +23,11 @@ internal class TaskExtractMateria
 
     internal unsafe static bool? Extract()
     {
-        if (!RepairAndExtractHelper.NeedsExtract())
+        if (!RepairAndExtractHelper.NeedsExtract() || InventoryHelper.GetFreeInventorySlots() == 0)
         {
+            if (InventoryHelper.GetFreeInventorySlots() == 0)
+                DuoLog.Warning("No Free Slots Remaining to Extract Materia");
+
             if (TryGetAddonByName<AtkUnitBase>("Materialize", out var addon) && IsAddonReady(addon))
             {
                 Callback.Fire(addon, true, -1);

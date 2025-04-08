@@ -1,8 +1,6 @@
 ﻿using ECommons;
 using ECommons.UIHelpers;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using Dalamud.Game.ClientState.Objects.Types;
-using Dalamud.Game.ClientState.Objects.Enums;
 
 namespace AutoScrip.Helpers;
 

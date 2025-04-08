@@ -1,11 +1,4 @@
 ﻿using FFXIVClientStructs.FFXIV.Client.Game;
-using Lumina.Excel.Sheets;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AutoScrip.Helpers;
 
@@ -45,7 +38,10 @@ internal unsafe class InventoryHelper
         if (C.SetTurnInConditions)
         {
             if (GetFreeInventorySlots() == 0 && GetFishItemCount(C.SelectedFish.FishId) < C.MinimumFishToTurnin)
+            {
+                DuoLog.Error("Less Fish than minumum selected");
                 return false;
+            }
         }
         else
         {

@@ -84,7 +84,10 @@ internal class MainTab
         ImGui.Text($"Current Task: {SchedulerMain.CurrentState.ToString()}");
         if (SchedulerMain.CurrentState == SchedulerMain.State.Fishing)
         {
-            ImGui.Text($"Time Remaining at Fishing Location: {SchedulerMain.GetFishingTimeRemaining()}");
+            if (SchedulerMain.GetFishingTimeRemaining() == string.Empty)
+                ImGui.Text($"Time Remaining at Fishing Location: Waiting for current cast to finish.");
+            else
+                ImGui.Text($"Time Remaining at Fishing Location: {SchedulerMain.GetFishingTimeRemaining()}");
         }
         ImGui.SetCursorPosY(ImGui.GetWindowSize().Y - 40);
 

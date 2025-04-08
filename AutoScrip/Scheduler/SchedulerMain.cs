@@ -3,15 +3,10 @@ using AutoScrip.Helpers;
 using AutoScrip.IPC;
 using AutoScrip.Scheduler.Tasks;
 using Dalamud.Game.ClientState.Conditions;
-using Dalamud.Game.ClientState.Objects.Enums;
 using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.Automation;
 using ECommons.DalamudServices;
 using ECommons.GameHelpers;
-using FFXIVClientStructs.FFXIV.Client.Game;
-using FFXIVClientStructs.FFXIV.Client.Game.Object;
-using Lumina.Excel.Sheets;
-using System.Data;
 
 namespace AutoScrip.Scheduler;
 
@@ -104,9 +99,11 @@ internal static class SchedulerMain
                 switch (CurrentState)
                 {
                     case State.Idle:
-                        if (Svc.ClientState.LocalPlayer.GetJob() != ECommons.ExcelServices.Job.FSH && StatusesHelper.PlayerNotBusy())
+                        if (Svc.Condition[ConditionFlag.BoundByDuty])
+                            CurrentState = State.Error;
+                        else if (Svc.ClientState.LocalPlayer.GetJob() != ECommons.ExcelServices.Job.FSH && StatusesHelper.PlayerNotBusy())
                             CurrentState = State.SwapJobs;
-                        else if ((!InventoryHelper.HasInvetorySpace() || (!(InventoryHelper.GetGil() / 300 == 0) && !InventoryHelper.HasFishingBait() && !C.BuyBait)) && StatusesHelper.PlayerNotBusy())
+                        else if (ErrorHelper.ErrorConditions())
                             CurrentState = State.Error;
                         else if (InventoryHelper.CanTurnIn() && StatusesHelper.PlayerNotBusy())
                             CurrentState = State.GoingToExchange;
@@ -114,17 +111,17 @@ internal static class SchedulerMain
                             CurrentState = State.Fishing;
                         //else if (AutoRetainerHelper.ARRetainersWaitingToBeProcessed() && C.enableRetainers)
                         //
-                        else if (!InventoryHelper.HasFishingBait() && StatusesHelper.PlayerNotBusy() && !(InventoryHelper.GetGil() / 300 == 0))
+                        else if (!InventoryHelper.HasFishingBait() && StatusesHelper.PlayerNotBusy() && InventoryHelper.GetGil() / 300 != 0 && InventoryHelper.GetFreeInventorySlots() != 0)
                             CurrentState = State.GoingToBuyBait;
                         else if (!Plugin.navmeshIPC.IsReady())
                             CurrentState = State.WaitingForVnav;
                         else if (!ZonesHelper.IsInZone(C.SelectedFish.ZoneId) && StatusesHelper.PlayerNotBusy())
                             CurrentState = State.GoingToFishZone;
-                        else if (ZonesHelper.IsInZone(C.SelectedFish.ZoneId) && !InventoryHelper.HasDarkMatter() && C.SelfRepair && C.BuyDarkMatter & C.RepairGear && StatusesHelper.PlayerNotBusy() && !(InventoryHelper.GetGil() / 280 == 0))
+                        else if (ZonesHelper.IsInZone(C.SelectedFish.ZoneId) && !InventoryHelper.HasDarkMatter() && C.SelfRepair && C.BuyDarkMatter & C.RepairGear && StatusesHelper.PlayerNotBusy() && !(InventoryHelper.GetGil() / 280 == 0) && InventoryHelper.GetFreeInventorySlots() != 0)
                             CurrentState = State.BuyingDarkMatter;
                         else if (ZonesHelper.IsInZone(C.SelectedFish.ZoneId) && RepairAndExtractHelper.NeedsRepair(C.RepairThreshold) && C.RepairGear && StatusesHelper.PlayerNotBusy())
                             CurrentState = State.Repairing;
-                        else if (ZonesHelper.IsInZone(C.SelectedFish.ZoneId) && RepairAndExtractHelper.NeedsExtract() && C.ExtractMateria && StatusesHelper.PlayerNotBusy())
+                        else if (ZonesHelper.IsInZone(C.SelectedFish.ZoneId) && RepairAndExtractHelper.NeedsExtract() && C.ExtractMateria && InventoryHelper.GetFreeInventorySlots() != 0 && StatusesHelper.PlayerNotBusy())
                             CurrentState = State.Extracting;
                         else if (StatusesHelper.PlayerNotBusy())
                             CurrentState = State.GoingToFishLocation;
@@ -238,13 +235,13 @@ internal static class SchedulerMain
                         break;
 
                     case State.Extracting:
-                        if (!RepairAndExtractHelper.NeedsExtract() && StatusesHelper.PlayerNotBusy())
+                        if (!RepairAndExtractHelper.NeedsExtract() && InventoryHelper.GetFreeInventorySlots() != 0 && StatusesHelper.PlayerNotBusy())
                             CurrentState = State.Idle;
                         TaskExtractMateria.Enqueue();
                         break;
 
                     case State.BuyingDarkMatter:
-                        if ((InventoryHelper.HasDarkMatter() || InventoryHelper.GetGil() / 280 == 0) && StatusesHelper.PlayerNotBusy())
+                        if ((InventoryHelper.HasDarkMatter() || InventoryHelper.GetGil() > 280) && StatusesHelper.PlayerNotBusy())
                             CurrentState = State.Idle;
                         TaskBuyDarkMatter.Enqueue();
                         break;
@@ -257,6 +254,10 @@ internal static class SchedulerMain
                             TaskMoveTo.Enqueue(BaitData.VendorLocation, "Lure Merchant", 1f);
                             Plugin.taskManager.Enqueue(() => CurrentState = State.BuyingBait);
                         }
+                        else if (InventoryHelper.GetFreeInventorySlots() == 0 && !InventoryHelper.HasFishingBait())
+                        {
+                            CurrentState = State.Error;
+                        }
                         else
                         {
                             TaskTeleport.Enqueue(ZonesHelper.GetAetheryteId(BaitData.ZoneId), BaitData.ZoneId);
@@ -264,7 +265,7 @@ internal static class SchedulerMain
                         break;
 
                     case State.BuyingBait:
-                        if (!InventoryHelper.HasFishingBait() && InventoryHelper.GetGil() / 300 > 0)
+                        if (!InventoryHelper.HasFishingBait() && InventoryHelper.GetGil() > 300)
                             TaskBuyBait.Enqueue();
                         else
                             CurrentState = State.Idle;
@@ -272,22 +273,22 @@ internal static class SchedulerMain
 
 
                     case State.SwapJobs:
-                    if (Svc.ClientState.LocalPlayer.GetJob() == ECommons.ExcelServices.Job.FSH)
-                    {
-                        CurrentState = State.Idle;
-                    }
-                    if (swapCounter >= 3 && Svc.ClientState.LocalPlayer.GetJob() != ECommons.ExcelServices.Job.FSH)
-                    {
-                        DuoLog.Error("Failed to swap to Fisher");
-                        DisablePlugin();
-                    }
-                    else
-                    {
-                        Plugin.taskManager.Enqueue(() => Chat.Instance.ExecuteCommand($"/gearset change \"{C.FishSetName}\""));
-                        Plugin.taskManager.DelayNext(500);
-                        Plugin.taskManager.Enqueue(() => swapCounter++);
-                    }
-                    break;
+                        if (Svc.ClientState.LocalPlayer.GetJob() == ECommons.ExcelServices.Job.FSH)
+                        {
+                            CurrentState = State.Idle;
+                        }
+                        if (swapCounter >= 3 && Svc.ClientState.LocalPlayer.GetJob() != ECommons.ExcelServices.Job.FSH)
+                        {
+                            DuoLog.Error("Failed to swap to Fisher");
+                            DisablePlugin();
+                        }
+                        else
+                        {
+                            Plugin.taskManager.Enqueue(() => Chat.Instance.ExecuteCommand($"/gearset change \"{C.FishSetName}\""));
+                            Plugin.taskManager.DelayNext(500);
+                            Plugin.taskManager.Enqueue(() => swapCounter++);
+                        }
+                        break;
 
                     case State.WaitingForVnav:
                         if (Plugin.navmeshIPC.IsReady())
@@ -297,26 +298,15 @@ internal static class SchedulerMain
                         break;
 
                     case State.Error:
-                        if (!InventoryHelper.HasInvetorySpace())
-                        {
-                            DuoLog.Error("Insufficient Inventory Space");
-                            DisablePlugin();
-                        }
-                        if (!(InventoryHelper.GetGil() / 300 == 0) && !InventoryHelper.HasFishingBait() && !C.BuyBait)
-                        {
-                            DuoLog.Error("Insufficient Fishing Bait");
-                            if (!C.BuyBait)
-                                DuoLog.Error("Enable Buy Bait in Config or stock your inventory with \"Versatile Lures\"");
-                            else
-                                DuoLog.Error("Not Enough Gil to Buy Bait");
-                            DisablePlugin();
-                        }
+                        if (Svc.Condition[ConditionFlag.BoundByDuty])
+                            DuoLog.Error("Can not enable AutoScrip inside duty.");
+                        DisablePlugin();
                         break;
 
                     default:
                         CurrentState = State.Idle;
                         break;
-                    }
+                }
             }
         }
     }

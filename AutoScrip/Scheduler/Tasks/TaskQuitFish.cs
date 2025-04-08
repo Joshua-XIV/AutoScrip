@@ -1,12 +1,8 @@
 ﻿using AutoScrip.Helpers;
 using ECommons.DalamudServices;
+using ECommons.ImGuiMethods;
 using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AutoScrip.Scheduler.Tasks;
 
@@ -24,7 +20,7 @@ internal static class TaskQuitFish
         {
             if (test)
             {
-                DuoLog.Information("Spot Successful");
+                Notify.Success("Spot Successful");
             }
             return true;
         }

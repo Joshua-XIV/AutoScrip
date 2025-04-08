@@ -1,5 +1,7 @@
 ﻿using AutoScrip.Data;
 using ECommons.Configuration;
+using ECommons.DalamudServices;
+using Newtonsoft.Json;
 using System.Numerics;
 
 namespace AutoScrip.Configuration;

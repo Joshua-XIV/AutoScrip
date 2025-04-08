@@ -2,6 +2,8 @@
 using AutoScrip.Helpers;
 using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.Automation;
+using ECommons.DalamudServices;
+using ECommons.DalamudServices.Legacy;
 using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using Lumina.Excel.Sheets;
@@ -24,7 +26,7 @@ internal static class TaskBuyBait
     internal unsafe static bool? BuyBait()
     {
         AtkUnitBase* addon;
-        if (InventoryHelper.HasFishingBait() || InventoryHelper.GetGil()/300 == 0)
+        if (InventoryHelper.HasFishingBait() || InventoryHelper.GetGil() < 300 || InventoryHelper.GetFreeInventorySlots() == 0)
         {
             if (TryGetAddonByName<AtkUnitBase>("SelectYesno", out addon) && IsAddonReady(addon))
             {
@@ -51,7 +53,7 @@ internal static class TaskBuyBait
         else if (TryGetAddonByName<AtkUnitBase>("Shop", out addon) && IsAddonReady(addon))
         {
             var quantity = InventoryHelper.GetGil() / 300;
-            var maxLimit = C.BuyBait ? 99 : 999;
+            var maxLimit = C.BuyMaxBait ? 999 : 99;
             if (EzThrottler.Throttle("Purchase"))
                 Callback.Fire(addon, true, 0, 3, Math.Min(quantity, maxLimit));
         }
@@ -61,6 +63,8 @@ internal static class TaskBuyBait
             IGameObject? gameObject;
             if ((gameObject = ObjectHelper.GetObjectByGameObjectId(BaitData.VendorObjectId)) == null)
                 return false;
+
+            Svc.Targets.SetTarget(gameObject);
 
             if ((addon = ObjectHelper.InteractWithObjectUntilAddon(gameObject, "SelectIconString")) == null)
                 return false;

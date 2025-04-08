@@ -2,6 +2,7 @@
 using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.Automation;
 using ECommons.DalamudServices;
+using ECommons.DalamudServices.Legacy;
 using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Component.GUI;
@@ -42,7 +43,7 @@ internal static class TaskBuyDarkMatter
     internal unsafe static bool Buy()
     {
         AtkUnitBase* addon;
-        if (InventoryHelper.HasDarkMatter() || InventoryHelper.GetGil()/280 == 0)
+        if (InventoryHelper.HasDarkMatter() || InventoryHelper.GetGil() < 280|| InventoryHelper.GetFreeInventorySlots() == 0)
         {
             if (TryGetAddonByName<AtkUnitBase>("Shop", out addon) && IsAddonReady(addon))
             {
@@ -55,6 +56,14 @@ internal static class TaskBuyDarkMatter
                 if (EzThrottler.Throttle("ExitSelect"))
                     Callback.Fire(addon, true, -1);
                 return false;
+            }
+            if (InventoryHelper.GetFreeInventorySlots() == 0)
+            {
+                DuoLog.Warning("Insuffcient Inventory Space");
+            }
+            if (InventoryHelper.GetGil() < 280)
+            {
+                DuoLog.Warning("Insuffcient Gil");
             }
             return true;
         }
@@ -81,6 +90,8 @@ internal static class TaskBuyDarkMatter
             IGameObject? gameObject;
             if ((gameObject = ObjectHelper.GetObjectByGameObjectId(C.SelectedFish.MerchantGameObjectId)) == null)
                 return false;
+
+            Svc.Targets.SetTarget(gameObject);
 
             if ((addon = ObjectHelper.InteractWithObjectUntilAddon(gameObject, "SelectString")) == null)
                 return false;

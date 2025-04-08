@@ -2,10 +2,7 @@
 using Dalamud.Interface.Colors;
 using ECommons.Automation;
 using ECommons.ImGuiMethods;
-using ECommons.Logging;
 using ECommons.Reflection;
-using ECommons.Throttlers;
-using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using ImGuiNET;
 
@@ -131,10 +128,13 @@ internal class Generic
         CheckMarkTip(installed);
         if (ImGui.IsItemHovered() && !installed)
         {
+            ImGui.BeginTooltip();
             ImGui.Text("Click to Copy Repo");
+            ImGui.EndTooltip();
             if (ImGui.IsItemClicked())
             {
                 ImGui.SetClipboardText(pluginRepo);
+                Notify.Info("Repo URL Copied");
             }
         }
     }

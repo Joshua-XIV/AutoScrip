@@ -4,6 +4,8 @@ using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.Automation;
 using ECommons.Automation.NeoTaskManager.Tasks;
 using ECommons.Configuration;
+using ECommons.DalamudServices;
+using ECommons.DalamudServices.Legacy;
 using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using Lumina.Excel.Sheets;
@@ -50,6 +52,8 @@ internal class TaskExchange
             IGameObject? gameObject;
             if ((gameObject = ObjectHelper.GetObjectByGameObjectId(C.SelectedCity.ScripExchange.ScripExchangeGameObjectId)) == null)
                 return false;
+
+            Svc.Targets.SetTarget(gameObject);
 
             if ((addon = ObjectHelper.InteractWithObjectUntilAddon(gameObject, "SelectIconString")) == null)
                 return false;

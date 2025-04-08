@@ -1,13 +1,5 @@
-﻿using Dalamud.Game.Inventory.InventoryEventArgTypes;
-using ECommons.DalamudServices;
+﻿using ECommons.DalamudServices;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using Lumina.Excel.Sheets;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace AutoScrip.Helpers;
 
 internal unsafe static class RepairAndExtractHelper

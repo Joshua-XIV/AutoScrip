@@ -27,6 +27,7 @@ internal class TaskSelfRepair
                 {
                     Callback.Fire(addon, true, -1);
                 }
+                return false;
             }
             return true;
         }

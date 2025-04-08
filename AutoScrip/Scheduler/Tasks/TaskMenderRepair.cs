@@ -1,6 +1,8 @@
 ﻿using AutoScrip.Helpers;
 using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.Automation;
+using ECommons.DalamudServices;
+using ECommons.DalamudServices.Legacy;
 using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 
@@ -60,6 +62,8 @@ internal static class TaskMenderRepair
             IGameObject? gameObject;
             if ((gameObject = ObjectHelper.GetObjectByGameObjectId(C.SelectedFish.MenderGameObjectId)) == null)
                 return false;
+
+            Svc.Targets.SetTarget(gameObject);
 
             if ((addon = ObjectHelper.InteractWithObjectUntilAddon(gameObject, "Repair")) == null)
                 return false;

@@ -1,6 +1,4 @@
 ﻿using ECommons.DalamudServices;
-using ECommons.UIHelpers;
-using FFXIVClientStructs.FFXIV.Component.GUI;
 using Lumina.Excel.Sheets;
 namespace AutoScrip.Helpers;
 
