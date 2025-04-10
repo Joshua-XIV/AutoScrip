@@ -19,7 +19,7 @@ internal class TaskSelfRepair
     internal unsafe static bool? SelfRepair()
     {
         AtkUnitBase* addon;
-        if (!RepairAndExtractHelper.NeedsRepair(C.RepairThreshold) || !InventoryHelper.HasDarkMatter())
+        if ((!RepairAndExtractHelper.NeedsRepair(C.RepairThreshold) || !InventoryHelper.HasDarkMatter()) && !StatusesHelper.IsOccipied39())
         {
             if (TryGetAddonByName<AtkUnitBase>("Repair", out addon) && IsAddonReady(addon))
             {
@@ -31,6 +31,7 @@ internal class TaskSelfRepair
             }
             return true;
         }
+        else if (StatusesHelper.IsOccipied39()) return false;
         else if (TryGetAddonByName<AtkUnitBase>("SelectYesno", out addon) && IsAddonReady(addon))
         {
             if (EzThrottler.Throttle("SelectYesnoThrottle"))

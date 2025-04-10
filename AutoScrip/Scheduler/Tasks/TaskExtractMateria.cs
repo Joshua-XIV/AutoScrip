@@ -4,6 +4,7 @@ using ECommons.DalamudServices;
 using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Component.GUI;
+using Lumina.Excel.Sheets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +24,7 @@ internal class TaskExtractMateria
 
     internal unsafe static bool? Extract()
     {
-        if (!RepairAndExtractHelper.NeedsExtract() || InventoryHelper.GetFreeInventorySlots() == 0)
+        if ((!RepairAndExtractHelper.NeedsExtract() || InventoryHelper.GetFreeInventorySlots() == 0) && !StatusesHelper.IsOccipied39())
         {
             if (InventoryHelper.GetFreeInventorySlots() == 0)
                 DuoLog.Warning("No Free Slots Remaining to Extract Materia");
@@ -34,7 +35,7 @@ internal class TaskExtractMateria
             }
             return true;
         }
-        else if (StatusesHelper.IsExtracting())
+        else if (StatusesHelper.IsOccipied39())
         {
             return false;
         }
