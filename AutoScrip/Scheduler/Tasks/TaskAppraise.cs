@@ -63,6 +63,13 @@ internal class TaskAppraise
 
         if (TryGetAddonByName<AtkUnitBase>("CollectablesShop", out addon) && IsAddonReady(addon))
         {
+            var radioButton = addon->GetNodeById(13);
+            var radioButton2 = radioButton->GetAsAtkComponentRadioButton();
+            if (!radioButton2->IsSelected)
+            {
+                Callback.Fire(addon, true, 14, 10);
+                return false;
+            }
             if (EzThrottler.Throttle("Appraise"))
             {
                 Callback.Fire(addon, true, 12, C.SelectedFish.CollectiblesTurnInListIndex);
