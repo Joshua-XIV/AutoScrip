@@ -4,6 +4,8 @@ using AutoScrip.IPC;
 using AutoScrip.Scheduler;
 using System.Numerics;
 using ImGuiNET;
+using System.Drawing;
+using Dalamud.Interface.Colors;
 
 namespace AutoScrip.UI.MainWindow;
 
@@ -73,6 +75,10 @@ internal class MainTab
 
         var taskName = Plugin.runCommandTask ? Plugin.CurrentCommandState.ToString() : SchedulerMain.CurrentState.ToString();
         ImGui.Text($"Current Task: {taskName}");
+        if (!Plugin.navmeshIPC.IsReady())
+        {
+            ImGui.TextColored(ImGuiColors.DalamudOrange, "Build Progres: " + Plugin.navmeshIPC.BuildProgress.ToString());
+        }
 
         if (SchedulerMain.CurrentState == SchedulerMain.State.Fishing || (SchedulerMain.CurrentState == SchedulerMain.State.Extracting && SchedulerMain.extractDuringFishSession))
         {

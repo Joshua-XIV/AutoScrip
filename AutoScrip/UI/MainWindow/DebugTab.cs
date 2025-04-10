@@ -1,6 +1,9 @@
 ﻿using AutoScrip.Helpers;
 using Dalamud.Game.Gui.Toast;
+using ECommons.Throttlers;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using ImGuiNET;
+using Lumina.Excel.Sheets;
 
 namespace AutoScrip.UI.MainWindow;
 
@@ -27,5 +30,12 @@ internal class DebugTab
             ImGui.Text(Plugin.toast.GetLastToast());
         else
             ImGui.Text("Toast hasn't been fired yet");
+
+        if (TryGetAddonByName<AtkUnitBase>("CollectablesShop", out var addon) && IsAddonReady(addon))
+        {
+            var radioButton = addon->GetNodeById(13);
+            var radioButton2 = radioButton->GetAsAtkComponentRadioButton();
+            ImGui.Text($"Fish Collectables Selected: {radioButton2->IsSelected}");
+        }
     }
 }
