@@ -4,12 +4,13 @@ using ECommons.ImGuiMethods;
 using System.Numerics;
 using ImGuiNET;
 using Dalamud.Interface.Textures.TextureWraps;
+using System.Reflection;
 
 namespace AutoScrip.UI.MainWindow;
 
 class MainWindow : Window
 {
-    public MainWindow() : base($"AutoScrip ###AutoScripMainWindow")
+    public MainWindow() : base($"AutoScrip {Plugin.GetType().Assembly.GetName().Version}###AutoScripMainWindow")
     {
         SizeConstraints = new()
         {
