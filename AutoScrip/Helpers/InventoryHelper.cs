@@ -1,4 +1,5 @@
 ﻿using FFXIVClientStructs.FFXIV.Client.Game;
+using FFXIVClientStructs.FFXIV.Client.Game.UI;
 
 namespace AutoScrip.Helpers;
 
@@ -12,6 +13,7 @@ internal unsafe class InventoryHelper
 
     internal static int GetFishItemCount(uint itemId) => InventoryManager.Instance()->GetInventoryItemCount(itemId + 500_000);
 
+    internal static bool HasCollectableFish() => GetFishItemCount(C.SelectedFish.FishId) > 0;
     internal static bool HasDarkMatter() => GetItemCount(33916) > 0;
 
     internal static bool HasFishingBait() => GetItemCount(29717) > 0;
@@ -22,7 +24,11 @@ internal unsafe class InventoryHelper
     {
         if (C.SetTurnInConditions)
         {
-            if (GetFreeInventorySlots() <= C.FreeRemainingSlots && GetFishItemCount(C.SelectedFish.FishId) > C.MinimumFishToTurnin)
+            if (GetFreeInventorySlots() <= C.FreeRemainingSlots && GetFishItemCount(C.SelectedFish.FishId) >= C.MinimumFishToTurnin && C.UseAndOperator && HasCollectableFish())
+                return true;
+            else if ((GetFreeInventorySlots() <= C.FreeRemainingSlots || GetFishItemCount(C.SelectedFish.FishId) >= C.MinimumFishToTurnin) && !C.UseAndOperator && C.MinimumFishToTurnin != 0)
+                return true;
+            else if ((GetFreeInventorySlots() <= C.FreeRemainingSlots) && !C.UseAndOperator && HasCollectableFish() && C.MinimumFishToTurnin == 0)
                 return true;
         }
         else
@@ -37,7 +43,7 @@ internal unsafe class InventoryHelper
     {
         if (C.SetTurnInConditions)
         {
-            if (GetFreeInventorySlots() == 0 && GetFishItemCount(C.SelectedFish.FishId) < C.MinimumFishToTurnin)
+            if (GetFreeInventorySlots() == 0 && GetFishItemCount(C.SelectedFish.FishId) < C.MinimumFishToTurnin && C.UseAndOperator)
             {
                 DuoLog.Error("Less Fish than minumum selected");
                 return false;
@@ -50,4 +56,6 @@ internal unsafe class InventoryHelper
         }
         return true;
     }
+
+    internal static uint CurrentBait => PlayerState.Instance()->FishingBait;
 }

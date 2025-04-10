@@ -1,14 +1,5 @@
-﻿using AutoScrip.Data;
-using AutoScrip.Helpers;
-using AutoScrip.IPC;
-using AutoScrip.Scheduler.Tasks;
-using Dalamud.Game.ClientState.Objects.Enums;
-using Dalamud.Game.ClientState.Objects.Types;
-using ECommons;
-using ECommons.Automation;
-using FFXIVClientStructs.FFXIV.Client.Game;
-using FFXIVClientStructs.FFXIV.Client.Game.Object;
-using FFXIVClientStructs.FFXIV.Component.GUI;
+﻿using AutoScrip.Helpers;
+using Dalamud.Game.Gui.Toast;
 using ImGuiNET;
 
 namespace AutoScrip.UI.MainWindow;
@@ -31,6 +22,10 @@ internal class DebugTab
             ImGui.Text($"Aethernet Name: {C.SelectedCity.Aethernet.AethernetName}");
         else
             ImGui.Text("N/A");
-        
+        ImGui.Text($"{C.UseAndOperator}");
+        if (Plugin.toast.GetLastToast() != null)
+            ImGui.Text(Plugin.toast.GetLastToast());
+        else
+            ImGui.Text("Toast hasn't been fired yet");
     }
 }

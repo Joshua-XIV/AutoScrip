@@ -19,6 +19,8 @@ public class Config : IEzConfig
     public int FinalTime { get; set; } = 20;
     public bool BuyBait { get; set; } = false;
     public bool BuyMaxBait { get; set; } = false;
+    public bool UseAndOperator { get; set; } = true;
+
 
     // Set Name Config
     public string FishSetName { get; set; } = "Fisher";
@@ -29,10 +31,12 @@ public class Config : IEzConfig
 
     // Extract Config
     public bool ExtractMateria { get; set; } = false;
+    public bool ExtractDuringFishing { get; set; } = false;
 
     // Repair Config
     public bool RepairGear { get; set; } = false;
     public bool SelfRepair { get; set; } = false;
+    public bool RepairDuringFishing { get; set; } = false;
     public int RepairThreshold { get; set; } = 0;
     public bool BuyDarkMatter { get; set; } = false;
     public bool BuyMaxDarkMatter { get; set; } = false;

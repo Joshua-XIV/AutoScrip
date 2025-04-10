@@ -4,10 +4,6 @@ using AutoScrip.IPC;
 using AutoScrip.Scheduler;
 using System.Numerics;
 using ImGuiNET;
-using Dalamud.Interface.Utility.Raii;
-using Dalamud.IoC;
-using Dalamud.Plugin.Services;
-using Dalamud.Interface.Textures.TextureWraps;
 
 namespace AutoScrip.UI.MainWindow;
 
@@ -24,12 +20,11 @@ internal class MainTab
         UpdateItemSelection();
         UpdateFish();
         UpdateCitySelection();
+        SyncColorSelection();
     }
 
     public static void Draw()
     {
-        var tex = C.SelectedScripColor == ScripColor.Orange ? Plugin.orangeImagePath : Plugin.purpleImagePath;
-        var text2 = Plugin.TextureProvider.GetFromFile(tex).GetWrapOrDefault();
         ImGui.SetNextItemWidth(300);
         if (ImGui.Combo("Select Scrip Color", ref selectedColorIndex, scripColorList, scripColorList.Length))
         {
@@ -37,12 +32,6 @@ internal class MainTab
             C.SelectedFish = FishTable.Table.FirstOrDefault(fish => fish.ScripColor == (ScripColor)selectedColorIndex)!;
             UpdateItemSelection();
             C.Save();
-        }
-
-        if (text2 != null)
-        {
-            ImGui.SameLine();
-            ImGui.Image(text2.ImGuiHandle, new Vector2(20f, 20f));
         }
 
         ImGui.SetNextItemWidth(300);
@@ -81,19 +70,22 @@ internal class MainTab
         Generic.CheckMarkTipString(NavmeshIPC.Name, NavmeshIPC.Repo);
         Generic.CheckMarkTipString(AutoHookIPC.Name, AutoHookIPC.Repo);
         ImGui.NewLine();
-        ImGui.Text($"Current Task: {SchedulerMain.CurrentState.ToString()}");
-        if (SchedulerMain.CurrentState == SchedulerMain.State.Fishing)
+
+        var taskName = Plugin.runCommandTask ? Plugin.CurrentCommandState.ToString() : SchedulerMain.CurrentState.ToString();
+        ImGui.Text($"Current Task: {taskName}");
+
+        if (SchedulerMain.CurrentState == SchedulerMain.State.Fishing || (SchedulerMain.CurrentState == SchedulerMain.State.Extracting && SchedulerMain.extractDuringFishSession))
         {
-            if (SchedulerMain.GetFishingTimeRemaining() == string.Empty)
-                ImGui.Text($"Time Remaining at Fishing Location: Waiting for current cast to finish.");
+            if (SchedulerMain.GetFishingTimeRemaining() == null)
+                ImGui.Text($"Time Remaining at Fishing Location: Waiting for current task to complete.");
             else
                 ImGui.Text($"Time Remaining at Fishing Location: {SchedulerMain.GetFishingTimeRemaining()}");
         }
         ImGui.SetCursorPosY(ImGui.GetWindowSize().Y - 40);
 
-        if (ImGui.Button(!SchedulerMain.runPlugin ? "Start AutoScrip" : "Stop AutoScrip", new Vector2(ImGui.GetContentRegionAvail().X, 30)))
+        if (ImGui.Button(!SchedulerMain.runPlugin && !Plugin.runCommandTask ? "Start AutoScrip" : "Stop AutoScrip", new Vector2(ImGui.GetContentRegionAvail().X, 30)))
         {
-            if (!SchedulerMain.runPlugin)
+            if (!SchedulerMain.runPlugin && !Plugin.runCommandTask)
             {
                 SchedulerMain.EnablePlugin();
             }
@@ -137,5 +129,11 @@ internal class MainTab
     private static void UpdateCitySelection()
     {
         C.SelectedCity = HubCities.Cities.FirstOrDefault(city => city.ZoneName == C.SelectedCity.ZoneName)!;
+        selectedCityIndex = Array.FindIndex(HubCities.Cities.ToArray(), city => city.ZoneName == C.SelectedCity.ZoneName);
+    }
+
+    private static void SyncColorSelection()
+    {
+        selectedColorIndex = (int)C.SelectedScripColor;
     }
 }

@@ -1,6 +1,9 @@
-﻿namespace AutoScrip.Helpers;
+﻿using ECommons.DalamudServices;
+using ECommons.GameHelpers;
 
-internal static class ErrorHelper
+namespace AutoScrip.Helpers;
+
+internal static class StateConditionHelper
 {
     internal static bool ErrorConditions()
     {
@@ -29,4 +32,11 @@ internal static class ErrorHelper
         }
         return false;
     }
-}
+
+    internal static bool NeedSwapJobs()
+    {
+        if (Svc.ClientState.LocalPlayer.GetJob() != ECommons.ExcelServices.Job.FSH && StatusesHelper.PlayerNotBusy())
+            return true;
+        else
+            return false;
+	}}

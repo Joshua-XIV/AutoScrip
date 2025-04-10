@@ -146,8 +146,4 @@ internal class Generic
             Callback.Fire(addon, true, 0);
         }
     }
-    /// <summary>
-    /// The default starting task when loading the plugin.
-    /// </summary>
-    internal static string currentTask = SchedulerMain.CurrentState.ToString();
 }

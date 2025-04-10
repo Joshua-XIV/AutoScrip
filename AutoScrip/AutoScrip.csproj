@@ -99,4 +99,8 @@
 			<Visible>true</Visible>
 		</Content>
 	</ItemGroup>
+
+	<ItemGroup>
+	  <None Include="Helpers\StateConditionHelper.cs" />
+	</ItemGroup>
 </Project>

@@ -27,7 +27,7 @@ internal static class StatusesHelper
 
     internal unsafe static bool IsMoving() => AgentMap.Instance()->IsPlayerMoving;
 
-    internal static bool IsExtracting() => Svc.Condition[ConditionFlag.Occupied39];
+    internal static bool IsOccipied39() => Svc.Condition[ConditionFlag.Occupied39];
 
     internal static bool IsMounted() => Svc.Condition[ConditionFlag.Mounted];
 

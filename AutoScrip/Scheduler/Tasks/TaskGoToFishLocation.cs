@@ -1,14 +1,10 @@
 ﻿using AutoScrip.Helpers;
-using ECommons.Configuration;
+using ECommons.Automation;
+using ECommons.DalamudServices;
+using ECommons.GameHelpers;
 using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using Newtonsoft.Json.Bson;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace AutoScrip.Scheduler.Tasks;
 
@@ -40,7 +36,7 @@ internal static class TaskGoToFishLocation
 
     internal unsafe static bool? GoToFishLocation()
     {
-        if (StatusesHelper.IsFishing())
+        if (StatusesHelper.IsFishing() || Svc.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.Gathering])
         {
             Generic.PluginLogInfoInstant("Fishing");
             Plugin.navmeshIPC.Stop();
@@ -48,12 +44,26 @@ internal static class TaskGoToFishLocation
         }
         else if (Plugin.navmeshIPC.PathfindInProgress() || Plugin.navmeshIPC.IsRunning() && ActionManager.Instance()->GetActionStatus(ActionType.Action, 289) == 0)
         {
-            if (EzThrottler.Throttle("CastLine", 50))
-                ActionHelper.ExecuteAction(ActionType.Action, 289);
+            if (Svc.ClientState.LocalPlayer.CurrentGp >= 230)
+            {
+                if (EzThrottler.Throttle("CastLine", 50))
+                    Chat.Instance.ExecuteCommand("/ahstart");
+            }
+            else
+            {
+                if (EzThrottler.Throttle("CastLine", 50))
+                    ActionHelper.ExecuteAction(ActionType.Action, 289);
+            }
+            return false;
+        }
+        else if (InventoryHelper.CurrentBait != 29717)
+        {
+            if (EzThrottler.Throttle("SwapBait"))
+                Chat.Instance.ExecuteCommand($"/bait 29717");
             return false;
         }
 
-        Plugin.navmeshIPC.MoveTo([C.SelectedFish.FishingSpots.PointToFace], false);
+            Plugin.navmeshIPC.MoveTo([C.SelectedFish.FishingSpots.PointToFace], false);
         Plugin.navmeshIPC.SetAlignCamera(true);
         return false;
     }

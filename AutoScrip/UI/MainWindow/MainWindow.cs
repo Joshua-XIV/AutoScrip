@@ -9,8 +9,6 @@ namespace AutoScrip.UI.MainWindow;
 
 class MainWindow : Window
 {
-    private static IDalamudTextureWrap? orangeScripImage = Plugin.TextureProvider.GetFromFile(Plugin.orangeImagePath).GetWrapOrDefault();
-    private static IDalamudTextureWrap? purpleScripImage = Plugin.TextureProvider.GetFromFile(Plugin.orangeImagePath).GetWrapOrDefault();
     public MainWindow() : base($"AutoScrip ###AutoScripMainWindow")
     {
         SizeConstraints = new()

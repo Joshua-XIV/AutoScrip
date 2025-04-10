@@ -25,6 +25,7 @@ internal class ConfigTab
     private static int finalTime = C.FinalTime;
     private static bool buyBait = C.BuyBait;
     private static bool buyMaxBait = C.BuyMaxBait;
+    private static bool useAndOperator = C.UseAndOperator;
     
 
     // Set Name
@@ -36,6 +37,7 @@ internal class ConfigTab
 
     // Extract
     private static bool extractMateria = C.ExtractMateria;
+    private static bool extractDuringFishing = C.ExtractDuringFishing;
 
     // GP
     private static int GPThreshold = C.GPThreshold;
@@ -48,6 +50,7 @@ internal class ConfigTab
     private static int repairThrehold = C.RepairThreshold == 99 ? 100 : C.RepairThreshold;
     private static bool buyDarkMatter = C.BuyDarkMatter;
     private static bool buyMaxDarkMatter = C.BuyMaxDarkMatter;
+    private static bool repairDuringFishing = C.RepairDuringFishing;
 
     // Waypoints
     private static bool setCustomZorgorWaypoints = C.SetCustomZorgorWaypoints;
@@ -71,6 +74,7 @@ internal class ConfigTab
                     C.ReverseCordialPrio = reverseCordialPrio;
                     C.Save();
                 }
+#if IGNORE
                 /*if (ImGui.Checkbox("###Set GP Threshold", ref setGPThreshold))
                 {
                     C.SetGPThreshold = setGPThreshold;
@@ -107,6 +111,7 @@ internal class ConfigTab
                     }
                     ImGui.TreePop();
                 }*/
+#endif
                 ImGui.Separator();
                 ImGui.TreePop();
             }
@@ -120,6 +125,12 @@ internal class ConfigTab
 
             if (ImGui.TreeNode("Repair Gear"))
             {
+                if (ImGui.Checkbox("Repair between fish catches", ref repairDuringFishing))
+                {
+                    C.RepairDuringFishing = repairDuringFishing;
+                    C.Save();
+                }
+
                 if (ImGui.Checkbox("Self Repair", ref selfRepair))
                 {
                     C.SelfRepair = selfRepair;
@@ -200,10 +211,22 @@ internal class ConfigTab
                 ImGui.TreePop();
             }
 
-            if (ImGui.Checkbox("Extract Materia", ref extractMateria))
+            if (ImGui.Checkbox("###ExtractMateria", ref extractMateria))
             {
                 C.ExtractMateria = extractMateria;
                 C.Save();
+            }
+            ImGui.SameLine();
+
+            if (ImGui.TreeNode("Extract Materia"))
+            {
+                if (ImGui.Checkbox("Extract between fish catches", ref extractDuringFishing))
+                {
+                    C.ExtractDuringFishing = extractDuringFishing;
+                    C.Save();
+                }
+                ImGui.Separator();
+                ImGui.TreePop();
             }
 
             ImGui.SetNextItemWidth(125);
@@ -235,42 +258,45 @@ internal class ConfigTab
             }
             ImGui.SameLine();
 
-            if (ImGui.TreeNode("Set Time Condition"))
+            if (ImGui.TreeNode("Set Custom Time Condition"))
             {
                 initialTime = Math.Clamp(initialTime, 5, 30);
                 finalTime = Math.Clamp(finalTime, initialTime, 30);
 
-                ImGui.Columns(2, "TimeSliders", false);
-                ImGui.SetColumnWidth(0, 150);
-
-                ImGui.Text("Start Time (minutes):");
-                ImGui.NextColumn();
-
-                ImGui.SetNextItemWidth(150);
-                if (ImGui.SliderInt("##InitialTime", ref initialTime, 5, 30))
+                if (ImGui.BeginTable("TimeSettings", 2, ImGuiTableFlags.BordersInnerV | ImGuiTableFlags.SizingFixedFit))
                 {
-                    initialTime = Math.Clamp(initialTime, 5, 30);
-                    finalTime = Math.Max(initialTime, finalTime);
-                }
-                ImGui.SameLine();
-                ImGuiComponents.HelpMarker("Minimum Time to stay at a single fishing Location");
-                ImGui.NextColumn();
+                    ImGui.TableSetupColumn("Label", ImGuiTableColumnFlags.WidthFixed, 150);
+                    ImGui.TableSetupColumn("Control", ImGuiTableColumnFlags.WidthStretch);
 
-                ImGui.Text("End Time (minutes):");
-                ImGui.NextColumn();
+                    ImGui.TableNextRow();
+                    ImGui.TableSetColumnIndex(0);
+                    ImGui.Text("Start Time (minutes):");
+                    ImGui.TableSetColumnIndex(1);
+                    ImGui.SetNextItemWidth(150);
+                    if (ImGui.SliderInt("##InitialTime", ref initialTime, 5, 30))
+                    {
+                        C.InitialTime = Math.Clamp(initialTime, 5, 30);
+                        C.FinalTime = Math.Max(initialTime, finalTime);
+                    }
+                    ImGui.SameLine();
+                    ImGuiComponents.HelpMarker("Minimum Time to stay at a single fishing Location");
 
-                ImGui.SetNextItemWidth(150);
-                if (ImGui.SliderInt("##FinalTime", ref finalTime, initialTime, 30))
-                {
-                    finalTime = Math.Clamp(finalTime, initialTime, 30);
+                    ImGui.TableNextRow();
+                    ImGui.TableSetColumnIndex(0);
+                    ImGui.Text("End Time (minutes):");
+                    ImGui.TableSetColumnIndex(1);
+                    ImGui.SetNextItemWidth(150);
+                    if (ImGui.SliderInt("##FinalTime", ref finalTime, initialTime, 30))
+                    {
+                        C.FinalTime = Math.Clamp(finalTime, initialTime, 30);
+                    }
+                    ImGui.SameLine();
+                    ImGuiComponents.HelpMarker("Maximum Time to stay at a single fishing Location");
+
+                    ImGui.EndTable();
                 }
-                ImGui.SameLine();
-                ImGuiComponents.HelpMarker("Maximum Time to stay at a single fishing Location");
-                ImGui.NextColumn();
 
                 ImGui.Text($"Time Range: {initialTime} — {finalTime} minutes");
-                ImGui.Columns(1);
-
                 ImGui.Separator();
                 ImGui.TreePop();
             }
@@ -282,7 +308,7 @@ internal class ConfigTab
             }
             ImGui.SameLine();
 
-            if (ImGui.TreeNode("Set Turn In Conditions"))
+            if (ImGui.TreeNode("Set Custom Turn In Conditions"))
             {
                 ImGui.Text("Minimum Free Slots:");
                 ImGui.SameLine();
@@ -290,11 +316,22 @@ internal class ConfigTab
 
                 if (ImGui.InputInt("##MinimumSlots", ref freeRemainingSlots, 1, 50))
                 {
-                    freeRemainingSlots = Math.Max(0, Math.Min(100, freeRemainingSlots));
+                    freeRemainingSlots = Math.Max(0, Math.Min(130, freeRemainingSlots));
                     C.FreeRemainingSlots = freeRemainingSlots;
                     C.Save();
                 }
-                ImGuiComponents.HelpMarker("Only turns in collectables when you have at least this many free inventory slots remaining.");
+                ImGuiComponents.HelpMarker("Only turns in collectables when you have at least this many free inventory slots remaining.\n" +
+                                           "* Set at 0 will only turn in when inventory is FULL.");
+
+                ImGui.Text("AND/OR Conidition: ");
+                ImGui.SameLine();
+                ImGui.SetNextItemWidth(50);
+                if (ImGui.Button(useAndOperator ? "&&" : "||"))
+                {
+                    useAndOperator = !useAndOperator;
+                    C.UseAndOperator = useAndOperator;
+                    C.Save();
+                }
 
                 ImGui.Text("Minimum Fish Count:");
                 ImGui.SameLine();
@@ -302,11 +339,12 @@ internal class ConfigTab
 
                 if (ImGui.InputInt("##MinimumFish", ref minimumFishToTurnin, 1, 50))
                 {
-                    minimumFishToTurnin = Math.Max(0, Math.Min(100, minimumFishToTurnin));
+                    minimumFishToTurnin = Math.Max(0, Math.Min(130, minimumFishToTurnin));
                     C.MinimumFishToTurnin = minimumFishToTurnin;
                     C.Save();
                 }
-                ImGuiComponents.HelpMarker("Only turns in collectables when you have at least this many fish in your inventory.");
+                ImGuiComponents.HelpMarker("Only turns in collectables when you have at least this many fish in your inventory.\n" +
+                                           "* Set at 0 will ignore this condition");
                 ImGui.TreePop();
             }
 

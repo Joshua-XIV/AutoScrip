@@ -13,6 +13,7 @@ namespace AutoScrip.Scheduler.Tasks;
 
 internal unsafe class TaskAethernet
 {
+
     internal static void Enqueue(string aethernetName, uint aethernetId, uint aethernetIndex, uint zoneId, IGameObject gameObject)
     {
         var address = (GameObject*)(void*)gameObject.Address;
