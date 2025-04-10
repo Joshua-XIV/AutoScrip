@@ -6,6 +6,7 @@ using System.Numerics;
 using ImGuiNET;
 using System.Drawing;
 using Dalamud.Interface.Colors;
+using System;
 
 namespace AutoScrip.UI.MainWindow;
 
@@ -75,9 +76,12 @@ internal class MainTab
 
         var taskName = Plugin.runCommandTask ? Plugin.CurrentCommandState.ToString() : SchedulerMain.CurrentState.ToString();
         ImGui.Text($"Current Task: {taskName}");
-        if (!Plugin.navmeshIPC.IsReady())
+        if (!Plugin.navmeshIPC.IsReady() && (Plugin.runCommandTask || SchedulerMain.runPlugin))
         {
-            ImGui.TextColored(ImGuiColors.DalamudOrange, "Build Progres: " + Plugin.navmeshIPC.BuildProgress.ToString());
+            float progress = Plugin.navmeshIPC.BuildProgress.Invoke();
+            int progressPercent = (int)Math.Floor(progress * 100);
+            ImGui.TextColored(ImGuiColors.DalamudOrange, $"Build Progress: {progressPercent}%%");
+            ImGui.ProgressBar(progress, new Vector2(150, 20), $"{progressPercent}%");
         }
 
         if (SchedulerMain.CurrentState == SchedulerMain.State.Fishing || (SchedulerMain.CurrentState == SchedulerMain.State.Extracting && SchedulerMain.extractDuringFishSession))
