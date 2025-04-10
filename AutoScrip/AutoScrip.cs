@@ -271,6 +271,7 @@ public class AutoScrip : IDalamudPlugin
         }
     }
 
+    private CommandState lastValidState = CommandState.End;
     private void onCommandTask()
     {
         if (runCommandTask)
@@ -288,6 +289,7 @@ public class AutoScrip : IDalamudPlugin
                     case CommandState.TurnIn:
                         if (!Plugin.navmeshIPC.IsReady())
                         {
+                            lastValidState = CommandState.TurnIn;
                             CurrentCommandState = CommandState.WaitingForVnav;
                         }
                         else if (ZonesHelper.IsInZone(C.SelectedCity.ZoneId) && StatusesHelper.PlayerNotBusy())
@@ -324,6 +326,7 @@ public class AutoScrip : IDalamudPlugin
                     case CommandState.GoToExchange:
                         if (!Plugin.navmeshIPC.IsReady())
                         {
+                            lastValidState = CommandState.GoToExchange;
                             CurrentCommandState = CommandState.WaitingForVnav;
                         }
                         else if (ZonesHelper.IsInZone(C.SelectedCity.ZoneId) && StatusesHelper.PlayerNotBusy())
@@ -345,6 +348,7 @@ public class AutoScrip : IDalamudPlugin
                     case CommandState.GoToTurnIn:
                         if (!Plugin.navmeshIPC.IsReady())
                         {
+                            lastValidState = CommandState.GoToTurnIn;
                             CurrentCommandState = CommandState.WaitingForVnav;
                         }
                         else if (ZonesHelper.IsInZone(C.SelectedCity.ZoneId) && StatusesHelper.PlayerNotBusy())
@@ -357,6 +361,13 @@ public class AutoScrip : IDalamudPlugin
                         else
                         {
                             TaskTeleport.Enqueue(ZonesHelper.GetAetheryteId(C.SelectedCity.ZoneId), C.SelectedCity.ZoneId);
+                        }
+                        break;
+
+                    case CommandState.WaitingForVnav:
+                        if (Plugin.navmeshIPC.IsReady())
+                        {
+                            CurrentCommandState = lastValidState;
                         }
                         break;
                 }
