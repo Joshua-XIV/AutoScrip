@@ -81,6 +81,7 @@ public class FishTable
                 },
                 PointToFace = new Vector3(37.71f, 22.36f, 1000f)
             },
+            MaxScripTurnIn = 78,
             ScripColor = ScripColor.Purple,
             GathererScripId = 33914,
             ScripTurnInId = 38,
