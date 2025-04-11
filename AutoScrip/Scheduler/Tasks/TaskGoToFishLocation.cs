@@ -36,6 +36,10 @@ internal static class TaskGoToFishLocation
 
     internal unsafe static bool? GoToFishLocation()
     {
+        if (Svc.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.Mounted])
+        {
+            return true;
+        }
         if (StatusesHelper.IsFishing() || Svc.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.Gathering])
         {
             Generic.PluginLogInfoInstant("Fishing");

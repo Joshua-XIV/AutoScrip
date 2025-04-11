@@ -3,6 +3,7 @@ using AutoScrip.Helpers;
 using AutoScrip.IPC;
 using AutoScrip.Scheduler.Tasks;
 using Dalamud.Game.ClientState.Conditions;
+using Dalamud.Game.ClientState.JobGauge.Types;
 using Dalamud.Game.ClientState.Objects.Types;
 using ECommons.Automation;
 using ECommons.DalamudServices;
@@ -12,15 +13,15 @@ namespace AutoScrip.Scheduler;
 
 internal static class SchedulerMain
 {
-    private static DateTime? fishingStartTime;
-    private static TimeSpan fishingDuration;
+    private static int fishingDuration;
 
     internal static string GetFishingTimeRemaining()
     {
-        if (fishingStartTime == null || !fishingSession)
+        if (!fishingSession)
             return null;
 
-        TimeSpan remaining = fishingDuration - (DateTime.Now - fishingStartTime.Value);
+        TimeSpan remaining = TimeSpan.FromSeconds(fishingDuration) - Plugin.stopwatch.Elapsed;
+
         if (remaining <= TimeSpan.Zero)
             return null;
         else
@@ -122,34 +123,44 @@ internal static class SchedulerMain
         {
             case State.Idle:
                 if (Svc.Condition[ConditionFlag.BoundByDuty])
+                {
                     CurrentState = State.Error;
-                else if (StateConditionHelper.NeedSwapJobs())
+                    break;
+                }
+
+                bool isPlayerBusy = !StatusesHelper.PlayerNotBusy();
+                bool inFishingZone = ZonesHelper.IsInZone(C.SelectedFish.ZoneId);
+                bool hasBait = InventoryHelper.HasFishingBait();
+                bool hasDarkMatter = InventoryHelper.HasDarkMatter();
+                uint freeSlots = InventoryHelper.GetFreeInventorySlots();
+                int gil = InventoryHelper.GetGil();
+
+                if (StateConditionHelper.NeedSwapJobs())
                     CurrentState = State.SwapJobs;
                 else if (StateConditionHelper.ErrorConditions())
                     CurrentState = State.Error;
-                else if (InventoryHelper.CanTurnIn() && StatusesHelper.PlayerNotBusy())
-                    CurrentState = State.GoingToExchange;
                 else if (StatusesHelper.IsFishing() || (Svc.Condition[ConditionFlag.Gathering] && Svc.ClientState.LocalPlayer.GetJob() == ECommons.ExcelServices.Job.FSH))
                     CurrentState = State.Fishing;
-                //else if (AutoRetainerHelper.ARRetainersWaitingToBeProcessed() && C.enableRetainers)
-                //
-                else if (!InventoryHelper.HasFishingBait() && StatusesHelper.PlayerNotBusy() && InventoryHelper.GetGil() / 300 != 0 && InventoryHelper.GetFreeInventorySlots() != 0)
-                    CurrentState = State.GoingToBuyBait;
-                else if (!Plugin.navmeshIPC.IsReady())
-                    CurrentState = State.WaitingForVnav;
-                else if (!ZonesHelper.IsInZone(C.SelectedFish.ZoneId) && StatusesHelper.PlayerNotBusy())
-                    CurrentState = State.GoingToFishZone;
-                else if (ZonesHelper.IsInZone(C.SelectedFish.ZoneId) && !InventoryHelper.HasDarkMatter() && C.SelfRepair && C.BuyDarkMatter & C.RepairGear && StatusesHelper.PlayerNotBusy() && !(InventoryHelper.GetGil() / 280 == 0) && InventoryHelper.GetFreeInventorySlots() != 0)
-                    CurrentState = State.BuyingDarkMatter;
-                else if (ZonesHelper.IsInZone(C.SelectedFish.ZoneId) && RepairAndExtractHelper.NeedsRepair(C.RepairThreshold) && C.RepairGear && C.SelfRepair && InventoryHelper.HasDarkMatter() && StatusesHelper.PlayerNotBusy())
-                    CurrentState = State.SelfRepairing;
-                else if (ZonesHelper.IsInZone(C.SelectedFish.ZoneId) && RepairAndExtractHelper.NeedsRepair(C.RepairThreshold) && C.RepairGear && StatusesHelper.PlayerNotBusy() && !C.SelfRepair)
-                    CurrentState = State.Repairing;
-                else if (ZonesHelper.IsInZone(C.SelectedFish.ZoneId) && RepairAndExtractHelper.NeedsExtract() && C.ExtractMateria && InventoryHelper.GetFreeInventorySlots() != 0 && StatusesHelper.PlayerNotBusy())
-                    CurrentState = State.Extracting;
-                else if (StatusesHelper.PlayerNotBusy())
-                    CurrentState = State.GoingToFishLocation;
-                break;
+                else if (!isPlayerBusy)
+                {
+                    if (InventoryHelper.CanTurnIn())
+                        CurrentState = State.GoingToExchange;
+                    else if (!hasBait && gil / 300 != 0 && freeSlots != 0)
+                        CurrentState = State.GoingToBuyBait;
+                    else if (!Plugin.navmeshIPC.IsReady())
+                        CurrentState = State.WaitingForVnav;
+                    else if (!inFishingZone)
+                        CurrentState = State.GoingToFishZone;
+                    else if (!hasDarkMatter && C.SelfRepair && C.BuyDarkMatter && C.RepairGear && gil > 280 && freeSlots != 0)
+                        CurrentState = State.BuyingDarkMatter;
+                    else if (RepairAndExtractHelper.NeedsRepair(C.RepairThreshold) && C.RepairGear)
+                        CurrentState = C.SelfRepair && hasDarkMatter ? State.SelfRepairing : State.Repairing;
+                    else if (RepairAndExtractHelper.NeedsExtract() && C.ExtractMateria && freeSlots != 0)
+                        CurrentState = State.Extracting;
+                    else
+                        CurrentState = State.GoingToFishLocation;
+                }
+            break;
 
             case State.GoingToExchange:
                 if (!Plugin.navmeshIPC.IsReady())
@@ -220,15 +231,16 @@ internal static class SchedulerMain
                 }
                 if (!fishingSession)
                 {
-                    fishingDuration = TimeSpan.FromSeconds(FishingTime());
-                    fishingStartTime = DateTime.Now;
-                    Generic.PluginLogInfoInstant($"Starting Duration of {fishingDuration} minutes");
+                    fishingDuration =  FishingTime();
+                    Plugin.stopwatch.Start();
+                    Generic.PluginLogInfoInstant($"Starting Duration of {fishingDuration} seconds");
                     fishingSession = true;
                 }
-                if (DateTime.Now - fishingStartTime >= fishingDuration)
+                if (Plugin.stopwatch.Elapsed.TotalSeconds >= fishingDuration)
                 {
                     fishingSession = false;
-                    fishingStartTime = null;
+                    Plugin.stopwatch.Stop();
+                    Plugin.stopwatch.Reset();
                     runAutoHook = false;
                     Generic.PluginLogInfoInstant($"Duration Ended");
                     TaskPreserveCollectable.Enqueue();
@@ -237,8 +249,9 @@ internal static class SchedulerMain
                 }
                 else if (Plugin.toast.GetLastToast() == "The fish sense something amiss. Perhaps it is time to try another location.")
                 {
+                    Plugin.stopwatch.Stop();
+                    Plugin.stopwatch.Reset();
                     fishingSession = false;
-                    fishingStartTime = null;
                     runAutoHook = false;
                     Generic.PluginLogInfoInstant($"Duration Canceled, must reset fishing hole");
                     TaskPreserveCollectable.Enqueue();
@@ -246,35 +259,40 @@ internal static class SchedulerMain
                     TaskTeleport.Enqueue(ZonesHelper.GetAetheryteId(C.SelectedCity.ZoneId), C.SelectedCity.ZoneId);
                     Plugin.taskManager.Enqueue(() => CurrentState = State.Idle);
                 }
-                else if (RepairAndExtractHelper.NeedsExtract() && !StatusesHelper.IsFishing() && InventoryHelper.GetFreeInventorySlots() != 0 && C.ExtractDuringFishing && C.ExtractMateria)
+                else if (!StatusesHelper.IsFishing())
                 {
-                    Generic.PluginLogInfoInstant($"Fishing Stopped to Extract Materia");
-                    TaskQuitFish.Enqueue();
-                    Plugin.taskManager.Enqueue(() => !Svc.Condition[ConditionFlag.Gathering] && !Svc.Condition[ConditionFlag.Fishing]);
-                    Plugin.taskManager.Enqueue(() => extractDuringFishSession = true);
-                    Plugin.taskManager.Enqueue(() => CurrentState = State.Extracting);
-                }
-                else if (RepairAndExtractHelper.NeedsRepair(C.RepairThreshold) && !StatusesHelper.IsFishing() && C.RepairDuringFishing && C.RepairGear)
-                {
-                    Generic.PluginLogInfoInstant($"Fishing Stopped to Repair");
-                    TaskQuitFish.Enqueue();
-                    Plugin.taskManager.Enqueue(() => !Svc.Condition[ConditionFlag.Gathering] && !Svc.Condition[ConditionFlag.Fishing]);
-                    Plugin.taskManager.Enqueue(() => repairDuringFishSession = true);
-                    Plugin.taskManager.Enqueue(() => CurrentState = C.SelfRepair ? State.SelfRepairing : State.Repairing);
-                }
-                else if (!InventoryHelper.HasFishingBait() && !StatusesHelper.IsFishing())
-                {
-                    fishingSession = false;
-                    fishingStartTime = null;
-                    runAutoHook = false;
-                    Generic.PluginLogInfoInstant($"Duration Ended, No Bait");
-                    TaskQuitFish.Enqueue();
-                    Plugin.taskManager.Enqueue(() => CurrentState = State.Idle);
+                    if (RepairAndExtractHelper.NeedsExtract() && InventoryHelper.GetFreeInventorySlots() != 0 && C.ExtractDuringFishing && C.ExtractMateria)
+                    {
+                        Generic.PluginLogInfoInstant($"Fishing Stopped to Extract Materia");
+                        TaskQuitFish.Enqueue();
+                        Plugin.taskManager.Enqueue(() => !Svc.Condition[ConditionFlag.Gathering] && !Svc.Condition[ConditionFlag.Fishing]);
+                        Plugin.taskManager.Enqueue(() => extractDuringFishSession = true);
+                        Plugin.taskManager.Enqueue(() => CurrentState = State.Extracting);
+                    }
+                    else if (RepairAndExtractHelper.NeedsRepair(C.RepairThreshold) && C.RepairDuringFishing && C.RepairGear)
+                    {
+                        Generic.PluginLogInfoInstant($"Fishing Stopped to Repair");
+                        TaskQuitFish.Enqueue();
+                        Plugin.taskManager.Enqueue(() => !Svc.Condition[ConditionFlag.Gathering] && !Svc.Condition[ConditionFlag.Fishing]);
+                        Plugin.taskManager.Enqueue(() => repairDuringFishSession = true);
+                        Plugin.taskManager.Enqueue(() => CurrentState = C.SelfRepair ? State.SelfRepairing : State.Repairing);
+                    }
+                    else if (!InventoryHelper.HasFishingBait())
+                    {
+                        fishingSession = false;
+                        Plugin.stopwatch.Stop();
+                        Plugin.stopwatch.Reset();
+                        runAutoHook = false;
+                        Generic.PluginLogInfoInstant($"Duration Ended, No Bait");
+                        TaskQuitFish.Enqueue();
+                        Plugin.taskManager.Enqueue(() => CurrentState = State.Idle);
+                    }
                 }
                 else if (InventoryHelper.GetFreeInventorySlots() == 0)
                 {
                     fishingSession = false;
-                    fishingStartTime = null;
+                    Plugin.stopwatch.Stop();
+                    Plugin.stopwatch.Reset();
                     runAutoHook = false;
                     Generic.PluginLogInfoInstant($"Duration Ended, Inventory Full");
                     TaskQuitFish.Enqueue();
@@ -340,6 +358,10 @@ internal static class SchedulerMain
                 break;
 
             case State.GoingToBuyBait:
+                if (!Plugin.navmeshIPC.IsReady())
+                {
+                    CurrentState = State.WaitingForVnav;
+                }
                 if (ZonesHelper.IsInZone(BaitData.ZoneId) && StatusesHelper.PlayerNotBusy())
                 {
                     IGameObject gameObject = ObjectHelper.GetObjectByObjectKind(Dalamud.Game.ClientState.Objects.Enums.ObjectKind.Aetheryte);
