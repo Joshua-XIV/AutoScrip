@@ -232,7 +232,7 @@ internal class ConfigTab
                 ImGui.TreePop();
             }
 
-            if (ImGui.Checkbox("DDisable AutoHook on AutoScrip Stop", ref turnOffAutoHook))
+            if (ImGui.Checkbox("Disable AutoHook on AutoScrip Stop", ref turnOffAutoHook))
             {
                 C.TurnOffAutoHook = turnOffAutoHook;
                 C.Save();
