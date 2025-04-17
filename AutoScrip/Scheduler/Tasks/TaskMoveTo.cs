@@ -1,6 +1,7 @@
 ﻿using AutoScrip.Helpers;
 using ECommons.GameHelpers;
 using FFXIVClientStructs.FFXIV.Client.Game;
+using FFXIVClientStructs.FFXIV.Component.GUI;
 using System.Numerics;
 using static FFXIVClientStructs.FFXIV.Client.Game.GcArmyManager.Delegates;
 
@@ -13,7 +14,7 @@ internal static class TaskMoveTo
         Generic.PluginLogInfoEnqueue($"Moving to {destination}");
         Plugin.taskManager.Enqueue(() => MoveTo(targetPosition, minDistance, fly, disablePathfind), 1000*90);
     }
-
+    
     internal unsafe static bool? MoveTo(Vector3 targetPosition, float minDistance = 3f, bool fly = false, bool disablePathfind = false)
     {
         if (!Plugin.navmeshIPC.IsRunning() && !Plugin.navmeshIPC.PathfindInProgress() && !StatusesHelper.IsMoving() && DistanceHelper.GetDistanceToPlayer(targetPosition) <= minDistance)

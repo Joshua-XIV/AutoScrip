@@ -89,6 +89,10 @@ internal static class SchedulerMain
         Plugin.runCommandTask = false;
         Plugin.CurrentCommandState = AutoScrip.CommandState.End;
         Plugin.navmeshIPC.Stop();
+        if (C.TurnOffAutoHook)
+        {
+            AutoHookIPC.SetPluginState(false);
+        }
         return true;
     }
 

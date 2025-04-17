@@ -8,6 +8,9 @@ namespace AutoScrip.Configuration;
 
 public class Config : IEzConfig
 {
+    // Autohook Conditions
+    public bool TurnOffAutoHook { get; set; } = false;
+
     // Turn In Conditions
     public bool SetTurnInConditions { get; set; } = false;
     public int FreeRemainingSlots { get; set; } = 10;

@@ -14,6 +14,9 @@ internal class ConfigTab
     private static bool Debug = C.DEBUG;
     private static bool additionalLogging = C.AdditionalLogging;
 
+    // Autohook Conditions
+    private static bool turnOffAutoHook = C.TurnOffAutoHook;
+
     // Turn-In Conditions
     private static bool setTurnInCondition = C.SetTurnInConditions;
     private static int freeRemainingSlots = C.FreeRemainingSlots;
@@ -227,6 +230,12 @@ internal class ConfigTab
                 }
                 ImGui.Separator();
                 ImGui.TreePop();
+            }
+
+            if (ImGui.Checkbox("DDisable AutoHook on AutoScrip Stop", ref turnOffAutoHook))
+            {
+                C.TurnOffAutoHook = turnOffAutoHook;
+                C.Save();
             }
 
             ImGui.SetNextItemWidth(125);
