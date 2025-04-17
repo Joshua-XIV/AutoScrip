@@ -89,10 +89,12 @@ internal static class SchedulerMain
         Plugin.runCommandTask = false;
         Plugin.CurrentCommandState = AutoScrip.CommandState.End;
         Plugin.navmeshIPC.Stop();
+        AutoHookIPC.DeleteAllAnonymousPresets();
         if (C.TurnOffAutoHook)
         {
             AutoHookIPC.SetPluginState(false);
         }
+        TaskQuitFish.Enqueue();
         return true;
     }
 
