@@ -31,4 +31,5 @@ To view and edit the settings to your liking,  type and enter `/autoscrip` and n
 
 ## Required Plugins
 AutoScrip relies on navigation provided by vnavmesh: https://puni.sh/api/repository/veyn
+
 AutoScrip also relies on AutoHook provided in the punish library: https://love.puni.sh/ment.json
