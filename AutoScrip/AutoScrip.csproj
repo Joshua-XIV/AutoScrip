@@ -90,17 +90,6 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<Content Include="Assets\OrangeScrip.png">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-			<Visible>true</Visible>
-		</Content>
-		<Content Include="Assets\PurpleScrip.png">
-			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-			<Visible>true</Visible>
-		</Content>
-	</ItemGroup>
-
-	<ItemGroup>
 	  <None Include="Helpers\StateConditionHelper.cs" />
 	</ItemGroup>
 </Project>
