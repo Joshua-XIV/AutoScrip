@@ -3,7 +3,7 @@ using AutoScrip.Helpers;
 using AutoScrip.IPC;
 using AutoScrip.Scheduler;
 using System.Numerics;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using System.Drawing;
 using Dalamud.Interface.Colors;
 using System;

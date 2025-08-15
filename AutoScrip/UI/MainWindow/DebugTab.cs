@@ -2,7 +2,7 @@
 using Dalamud.Game.Gui.Toast;
 using ECommons.Throttlers;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using Lumina.Excel.Sheets;
 
 namespace AutoScrip.UI.MainWindow;

@@ -4,7 +4,7 @@ using ECommons.Automation;
 using ECommons.ImGuiMethods;
 using ECommons.Reflection;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 
 namespace AutoScrip.Helpers;
 
@@ -143,7 +143,7 @@ internal class Generic
     {
         if (TryGetAddonByName<AtkUnitBase>("SelectYesno", out var addon) && IsAddonReady(addon))
         {
-            Callback.Fire(addon, true, 0);
+            ECommons.Automation.Callback.Fire(addon, true, 0);
         }
     }
 }

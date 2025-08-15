@@ -2,7 +2,7 @@
 using Dalamud.Interface.Windowing;
 using ECommons.ImGuiMethods;
 using System.Numerics;
-using ImGuiNET;
+using Dalamud.Bindings.ImGui;
 using Dalamud.Interface.Textures.TextureWraps;
 using System.Reflection;
 
