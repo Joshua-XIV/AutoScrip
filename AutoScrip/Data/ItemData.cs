@@ -24,7 +24,7 @@ public static class ScripExchangeItems
 {
     public static readonly List<ScripItem> Items = new()
     {
-        new ScripItem("Mount Token", ScripColor.Orange, 4, 8, 6, 1000),
+        new ScripItem("Mount Token", ScripColor.Orange, 4, 8, 7, 1000),
         new ScripItem("Hi-Cordial", ScripColor.Purple, 4, 1, 0, 20),
         new ScripItem("Gatherer's Guerdon Materia XI (Gathering +20)", ScripColor.Purple, 5, 1, 0, 250),
         new ScripItem("Gatherer's Guile Materia XI (Perception +20)", ScripColor.Purple, 5, 1, 1, 250),
