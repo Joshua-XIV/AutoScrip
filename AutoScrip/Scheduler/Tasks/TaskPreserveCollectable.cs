@@ -25,7 +25,7 @@ internal static class TaskPreserveCollectable
             Callback.Fire(addon, true, 0);
             return true;
         }
-        else if (!StatusesHelper.IsFishing() && !Svc.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.Gathering42])
+        else if (!StatusesHelper.IsFishing() && !Svc.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.ExecutingGatheringAction])
         {
             return true;
         }

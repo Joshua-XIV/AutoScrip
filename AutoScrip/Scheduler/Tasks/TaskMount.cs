@@ -17,7 +17,7 @@ internal static class TaskMount
     {
         if (Svc.Condition[ConditionFlag.Mounted] && StatusesHelper.PlayerNotBusy()) return true;
 
-        if (!Svc.Condition[ConditionFlag.Casting] && !Svc.Condition[ConditionFlag.Unknown57] && StatusesHelper.PlayerNotBusy())
+        if (!Svc.Condition[ConditionFlag.Casting] && !Svc.Condition[ConditionFlag.MountOrOrnamentTransition] && StatusesHelper.PlayerNotBusy())
         {
             ActionHelper.ExecuteAction(ActionType.GeneralAction, 24);
         }

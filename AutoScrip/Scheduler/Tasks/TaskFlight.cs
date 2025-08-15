@@ -29,7 +29,7 @@ internal static class TaskFlight
             ActionHelper.ExecuteAction(ActionType.GeneralAction, 2);
             return false;
         }
-        else if (!Svc.Condition[ConditionFlag.Casting] && !Svc.Condition[ConditionFlag.Unknown57] && !Svc.Condition[ConditionFlag.Mounted] &&  StatusesHelper.PlayerNotBusy())
+        else if (!Svc.Condition[ConditionFlag.Casting] && !Svc.Condition[ConditionFlag.MountOrOrnamentTransition] && !Svc.Condition[ConditionFlag.Mounted] &&  StatusesHelper.PlayerNotBusy())
         {
             ActionHelper.ExecuteAction(ActionType.GeneralAction, 24);
             return false;
