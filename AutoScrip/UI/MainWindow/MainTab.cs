@@ -117,10 +117,18 @@ internal class MainTab
         if (C.SelectedScripColor == ScripColor.Orange)
         {
             C.SelectedOrangeItemIndex = Math.Clamp(C.SelectedOrangeItemIndex, 0, filteredItems.Count - 1);
+            if (filteredItems.Count > 0)
+            {
+                C.OrangeScripItem = filteredItems[C.SelectedOrangeItemIndex];
+            }
         }
         else
         {
             C.SelectedPurpleItemIndex = Math.Clamp(C.SelectedPurpleItemIndex, 0, filteredItems.Count - 1);
+            if (filteredItems.Count > 0)
+            {
+                C.PurpleScripItem = filteredItems[C.SelectedPurpleItemIndex];
+            }
         }
     }
 

@@ -19,10 +19,9 @@ namespace AutoScrip.Scheduler.Tasks;
 
 internal class TaskExchange
 {
-    private static ScripItem itemToBuy = C.SelectedScripColor == ScripColor.Orange ? C.OrangeScripItem : C.PurpleScripItem;
     internal static void Enqueue()
     {
-        itemToBuy = C.SelectedScripColor == ScripColor.Orange ? C.OrangeScripItem : C.PurpleScripItem;
+        var itemToBuy = C.SelectedScripColor == ScripColor.Orange ? C.OrangeScripItem : C.PurpleScripItem;
         Generic.PluginLogInfoEnqueue("Attempting Exchange");
         Plugin.taskManager.Enqueue(OpenExchange);
         Plugin.taskManager.DelayNext(500);
@@ -39,6 +38,7 @@ internal class TaskExchange
 
     internal unsafe static bool? OpenExchange()
     {
+        var itemToBuy = C.SelectedScripColor == ScripColor.Orange ? C.OrangeScripItem : C.PurpleScripItem;
         AtkUnitBase* addon;
         if (InventoryHelper.GetItemCount(C.SelectedFish.GathererScripId) < itemToBuy.Price)
             return true;
@@ -68,6 +68,7 @@ internal class TaskExchange
 
     internal unsafe static bool? OpenCategory(int categoryIndex)
     {
+        var itemToBuy = C.SelectedScripColor == ScripColor.Orange ? C.OrangeScripItem : C.PurpleScripItem;
         if (InventoryHelper.GetItemCount(C.SelectedFish.GathererScripId) < itemToBuy.Price)
             return false;
         if (TryGetAddonByName<AtkUnitBase>("InclusionShop", out var addon) && IsAddonReady(addon))
@@ -81,6 +82,7 @@ internal class TaskExchange
 
     internal unsafe static bool? OpenSubCategory(int subCategoryIndex)
     {
+        var itemToBuy = C.SelectedScripColor == ScripColor.Orange ? C.OrangeScripItem : C.PurpleScripItem;
         if (InventoryHelper.GetItemCount(C.SelectedFish.GathererScripId) < itemToBuy.Price)
             return false;
         if (TryGetAddonByName<AtkUnitBase>("InclusionShop", out var addon) && IsAddonReady(addon))
@@ -94,6 +96,7 @@ internal class TaskExchange
 
     internal unsafe static bool? OpenPurchase(int listIndex, int price)
     {
+        var itemToBuy = C.SelectedScripColor == ScripColor.Orange ? C.OrangeScripItem : C.PurpleScripItem;
         var quantity = InventoryHelper.GetItemCount(C.SelectedFish.GathererScripId) / price;
         AtkUnitBase* addon;
         if (InventoryHelper.GetItemCount(C.SelectedFish.GathererScripId) < itemToBuy.Price)
@@ -113,6 +116,7 @@ internal class TaskExchange
 
     internal unsafe static bool? Purchase()
     {
+        var itemToBuy = C.SelectedScripColor == ScripColor.Orange ? C.OrangeScripItem : C.PurpleScripItem;
         AtkUnitBase* addon;
         if (InventoryHelper.GetItemCount(C.SelectedFish.GathererScripId) < itemToBuy.Price)
             return true;
