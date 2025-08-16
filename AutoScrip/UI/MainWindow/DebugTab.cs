@@ -21,6 +21,9 @@ internal class DebugTab
         ImGui.Text($"Aethernet Index: {C.SelectedCity.Aethernet.AethernetIndex}");
         ImGui.Text($"Aethernet Zone ID: {C.SelectedCity.Aethernet.AethernetZoneId}");
         ImGui.Text($"Fish Count: {InventoryHelper.GetFishItemCount(C.SelectedFish.FishId)}");
+        ImGui.Text($"Config TurnOffAfterCap Value: {C.TurnOffAfterAppraise}");
+        ImGui.Text($"Cap - Current: {4000 - InventoryHelper.GetItemCount(C.SelectedFish.GathererScripId)} ");
+        ImGui.Text($"Max Turnin Current Scrip Fish: {C.SelectedFish.MaxScripTurnIn}");
         if (C.SelectedCity.Aethernet.AethernetName != string.Empty)
             ImGui.Text($"Aethernet Name: {C.SelectedCity.Aethernet.AethernetName}");
         else

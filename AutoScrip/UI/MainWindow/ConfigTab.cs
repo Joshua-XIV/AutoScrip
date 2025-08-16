@@ -14,6 +14,10 @@ internal class ConfigTab
     private static bool Debug = C.DEBUG;
     private static bool additionalLogging = C.AdditionalLogging;
 
+    // General
+    private static bool turnOffAfterAppraise = C.TurnOffAfterAppraise;
+    private static bool skipItemExchange = C.SkipItemExchange;
+
     // Autohook Conditions
     private static bool turnOffAutoHook = C.TurnOffAutoHook;
 
@@ -237,6 +241,21 @@ internal class ConfigTab
                 C.TurnOffAutoHook = turnOffAutoHook;
                 C.Save();
             }
+
+            if (ImGui.Checkbox("Disable AutoScrip After Appraising", ref turnOffAfterAppraise))
+            {
+                C.TurnOffAfterAppraise = turnOffAfterAppraise;
+                C.Save();
+            }
+            ImGui.SameLine();
+            ImGuiComponents.HelpMarker("After Appraisal, AutoScrip will turn off, allowing one to spend their scrips manually.");
+
+            // Needs Adjusting
+            //if (ImGui.Checkbox("Disable AutoScrip After Appraising", ref skipItemExchange))
+            //{
+            //    C.SkipItemExchange = skipItemExchange;
+            //    C.Save();
+            //}
 
             ImGui.SetNextItemWidth(125);
             if (ImGui.InputText("Fisher Set Name", ref fishSetName, 15))

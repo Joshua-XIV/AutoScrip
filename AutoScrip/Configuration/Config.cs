@@ -8,8 +8,12 @@ namespace AutoScrip.Configuration;
 
 public class Config : IEzConfig
 {
+    // General Conditions
+    public bool TurnOffAfterAppraise { get; set; } = false;
+
     // Autohook Conditions
     public bool TurnOffAutoHook { get; set; } = false;
+    public bool SkipItemExchange { get; set; } = false;
 
     // Turn In Conditions
     public bool SetTurnInConditions { get; set; } = false;

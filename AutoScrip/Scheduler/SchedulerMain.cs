@@ -196,7 +196,12 @@ internal static class SchedulerMain
                         TaskAppraise.Enqueue();
                         if (C.SelectedCity.ScripExchange.Position2 != default)
                             TaskMoveTo.Enqueue(C.SelectedCity.ScripExchange.Position2, "Exchange", 1f);
-                        TaskExchange.Enqueue();
+                        if (C.TurnOffAfterAppraise)
+                            Plugin.taskManager.Enqueue(() => DisablePlugin());
+                        else if (C.SkipItemExchange)
+                            Plugin.taskManager.Enqueue(() => CurrentState = State.Idle);
+                        else
+                            TaskExchange.Enqueue();
                     }
                     else
                     {
