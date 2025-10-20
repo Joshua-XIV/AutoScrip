@@ -336,7 +336,7 @@ internal static class SchedulerMain
                     }
                     else
                     {
-                        Plugin.taskManager.Enqueue(TaskGoToFishLocation.GoToFishLocation);
+                        Plugin.taskManager.Enqueue(() => TaskGoToFishLocation.GoToFishLocation());
                         Plugin.taskManager.Enqueue(() => CurrentState = State.Fishing);
                         Plugin.taskManager.Enqueue(() => SetRepairDuringFishSession());
                     }
@@ -353,7 +353,7 @@ internal static class SchedulerMain
                     }
                     else
                     {
-                        Plugin.taskManager.Enqueue(TaskGoToFishLocation.GoToFishLocation);
+                        Plugin.taskManager.Enqueue(() => TaskGoToFishLocation.GoToFishLocation());
                         Plugin.taskManager.Enqueue(() => CurrentState = State.Fishing);
                         Plugin.taskManager.Enqueue(() => SetExtractDuringFishSession());
                     }

@@ -1,4 +1,5 @@
-﻿using AutoScrip.Helpers;
+﻿using AutoScrip.Data;
+using AutoScrip.Helpers;
 using ECommons.Automation;
 using ECommons.DalamudServices;
 using ECommons.GameHelpers;
@@ -31,11 +32,17 @@ internal static class TaskGoToFishLocation
         TaskFlight.Enqueue();
         TaskMoveTo.Enqueue(randomLocation, "Fishing Location", 1f, true);
         TaskDisMount.Enqueue();
-        Plugin.taskManager.Enqueue(GoToFishLocation, 1000*20);
+        Plugin.taskManager.Enqueue(() => GoToFishLocation(), 1000*20);
     }
 
-    internal unsafe static bool? GoToFishLocation()
+    internal static void Test(FishEntry fish)
     {
+        Plugin.taskManager.Enqueue(() => GoToFishLocation(fish.FishingSpots.PointToFace, true), 1000 * 20);
+    }
+
+    internal unsafe static bool? GoToFishLocation(Vector3? testPointToFace = null, bool test = false)
+    {
+        Vector3 pointToFace = testPointToFace ?? C.SelectedFish.FishingSpots.PointToFace;
         if (Svc.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.Mounted])
         {
             return true;
@@ -46,12 +53,17 @@ internal static class TaskGoToFishLocation
             Plugin.navmeshIPC.Stop();
             return true;
         }
-        else if (Plugin.navmeshIPC.PathfindInProgress() || Plugin.navmeshIPC.IsRunning() && ActionManager.Instance()->GetActionStatus(ActionType.Action, 289) == 0)
+        else if ((Plugin.navmeshIPC.PathfindInProgress() || Plugin.navmeshIPC.IsRunning()) && ActionManager.Instance()->GetActionStatus(ActionType.Action, 289) == 0)
         {
             if (Svc.ClientState.LocalPlayer.CurrentGp >= 230)
             {
                 if (EzThrottler.Throttle("CastLine", 50))
-                    Chat.Instance.ExecuteCommand("/ahstart");
+                {
+                    if (test)
+                        ActionHelper.ExecuteAction(ActionType.Action, 289);
+                    else
+                        Chat.Instance.ExecuteCommand("/ahstart");
+                }
             }
             else
             {
@@ -67,7 +79,7 @@ internal static class TaskGoToFishLocation
             return false;
         }
 
-            Plugin.navmeshIPC.MoveTo([C.SelectedFish.FishingSpots.PointToFace], false);
+        Plugin.navmeshIPC.MoveTo([pointToFace], false);
         Plugin.navmeshIPC.SetAlignCamera(true);
         return false;
     }

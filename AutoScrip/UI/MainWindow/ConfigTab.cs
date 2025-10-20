@@ -420,7 +420,7 @@ internal class ConfigTab
                             TaskFlight.Enqueue();
                             TaskMoveTo.Enqueue(C.CustomZorgorWaypoints[i], "Fishing Location", 1f, true);
                             TaskDisMount.Enqueue();
-                            Plugin.taskManager.Enqueue(TaskGoToFishLocation.GoToFishLocation, 1000 * 20);
+                            TaskGoToFishLocation.Test(FishTable.Table[0]);
                             TaskQuitFish.Enqueue(true);
                         }
                         else
@@ -498,7 +498,7 @@ internal class ConfigTab
                             TaskFlight.Enqueue();
                             TaskMoveTo.Enqueue(C.CustomFleetingBrandWaypoints[i], "Fishing Location", 1f, true);
                             TaskDisMount.Enqueue();
-                            Plugin.taskManager.Enqueue(TaskGoToFishLocation.GoToFishLocation, 1000 * 20);
+                            TaskGoToFishLocation.Test(FishTable.Table[1]);
                             TaskQuitFish.Enqueue(true);
                         }
                         else

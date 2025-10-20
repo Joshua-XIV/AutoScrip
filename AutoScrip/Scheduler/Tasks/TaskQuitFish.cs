@@ -18,10 +18,6 @@ internal static class TaskQuitFish
     {
         if (!Svc.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.Gathering])
         {
-            if (test)
-            {
-                Notify.Success("Spot Successful");
-            }
             return true;
         }
         if (Svc.Condition[Dalamud.Game.ClientState.Conditions.ConditionFlag.Gathering])
