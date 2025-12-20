@@ -5,8 +5,8 @@
   "Description": "Automation for Orange and Purple Gathering scrips with the help of vnavmesh and AutoHook",
   "InternalName": "AutoScrip",
   "ApplicableVersion": "any",
-  "AssemblyVersion": "1.1.0.0",
-  "DalamudApiLevel": 13,
+  "AssemblyVersion": "1.1.0.1",
+  "DalamudApiLevel": 14,
   "Tags": [
     "Scrips"
   ],
