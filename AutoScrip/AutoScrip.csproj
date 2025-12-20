@@ -21,7 +21,7 @@
 	</PropertyGroup>
 	
 	<ItemGroup>
-		<PackageReference Include="ECommons" Version="3.0.1.7" PrivateAssets="none" />
+		<PackageReference Include="ECommons" Version="3.1.0.1" PrivateAssets="none" />
 		<ProjectReference Include="..\AutoRetainerAPI\AutoRetainerAPI\AutoRetainerAPI.csproj" />
 		<PackageReference Include="DalamudPackager" Version="14.0.1" />
 	</ItemGroup>

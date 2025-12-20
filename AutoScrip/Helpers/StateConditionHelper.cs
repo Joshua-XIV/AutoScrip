@@ -1,5 +1,6 @@
 ﻿using ECommons.DalamudServices;
 using ECommons.GameHelpers;
+using ECommons.GameHelpers.LegacyPlayer;
 
 namespace AutoScrip.Helpers;
 
@@ -35,7 +36,7 @@ internal static class StateConditionHelper
 
     internal static bool NeedSwapJobs()
     {
-        if (Svc.ClientState.LocalPlayer.GetJob() != ECommons.ExcelServices.Job.FSH && StatusesHelper.PlayerNotBusy())
+        if (ECommons.GameHelpers.Player.Job != ECommons.ExcelServices.Job.FSH && StatusesHelper.PlayerNotBusy())
             return true;
         else
             return false;

@@ -145,7 +145,7 @@ internal static class SchedulerMain
                     CurrentState = State.SwapJobs;
                 else if (StateConditionHelper.ErrorConditions())
                     CurrentState = State.Error;
-                else if (StatusesHelper.IsFishing() || (Svc.Condition[ConditionFlag.Gathering] && Svc.ClientState.LocalPlayer.GetJob() == ECommons.ExcelServices.Job.FSH))
+                else if (StatusesHelper.IsFishing() || (Svc.Condition[ConditionFlag.Gathering] && ECommons.GameHelpers.Player.Job == ECommons.ExcelServices.Job.FSH))
                     CurrentState = State.Fishing;
                 else if (!isPlayerBusy)
                 {
@@ -399,11 +399,11 @@ internal static class SchedulerMain
 
 
             case State.SwapJobs:
-                if (Svc.ClientState.LocalPlayer.GetJob() == ECommons.ExcelServices.Job.FSH)
+                if (ECommons.GameHelpers.Player.Job == ECommons.ExcelServices.Job.FSH)
                 {
                     CurrentState = State.Idle;
                 }
-                if (swapCounter >= 3 && Svc.ClientState.LocalPlayer.GetJob() != ECommons.ExcelServices.Job.FSH)
+                if (swapCounter >= 3 && ECommons.GameHelpers.Player.Job != ECommons.ExcelServices.Job.FSH)
                 {
                     DuoLog.Error("Failed to swap to Fisher");
                     DisablePlugin();
