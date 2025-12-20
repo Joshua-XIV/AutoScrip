@@ -3,7 +3,7 @@ using Dalamud.Game.ClientState.Conditions;
 using ECommons.Automation;
 using ECommons.DalamudServices;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using SharpDX;
+using System;
 
 namespace AutoScrip.Scheduler.Tasks;
 
@@ -12,7 +12,7 @@ internal static class TaskFlight
     public static void Enqueue(float minHeight = 5, float maxHeight = 8)
     {
         Random randomClass = new Random();
-        float randomFloat = randomClass.NextFloat(minHeight, maxHeight);
+        float randomFloat = (float)(randomClass.NextDouble() * (maxHeight - minHeight) + minHeight);
         Generic.PluginLogInfoEnqueue("Flight");
         Plugin.taskManager.Enqueue(Flight);
         Plugin.taskManager.Enqueue(() => Chat.Instance.ExecuteCommand($"/vnav flydir 0 {randomFloat} .5"));
